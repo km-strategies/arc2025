@@ -1,0 +1,2988 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARC 2025 Impact Report — Anti-Recidivism Coalition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@700;900&family=Bebas+Neue&family=DM+Serif+Display&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --gold: #EBA717;
+    --gold-soft: #EDBD4F;
+    --gold-deep: #B8800F;
+    --ink: #0A1119;
+    --ink-2: #121C27;
+    --ink-3: #1B2530;
+    --cream: #F7F3EC;
+    --cream-2: #ECE6E1;
+    --paper: #FBF8F2;
+    --rule: rgba(216, 217, 218, 0.18);
+    --rule-light: #D8D9DA;
+    --text-light: #E8E4DC;
+    --text-mid: #4B535D;
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --maxw: 1280px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* —— Progress bar at top —— */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px;
+    background: transparent; z-index: 1000;
+  }
+  .progress__bar {
+    height: 100%; width: 0%; background: var(--gold);
+    transition: width 0.05s linear;
+  }
+
+  /* —— Top utility bar —— */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 999;
+    padding: 18px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.3s ease, padding 0.3s ease;
+    pointer-events: none;
+  }
+  .topbar.scrolled {
+    background: rgba(10, 17, 25, 0.92);
+    backdrop-filter: blur(10px);
+    padding: 12px 32px;
+  }
+  .topbar > * { pointer-events: auto; }
+  .topbar__logo {
+    color: var(--gold);
+    font-family: var(--display);
+    font-weight: 700; letter-spacing: 0.06em;
+    font-size: 14px; text-transform: uppercase;
+  }
+  .topbar__nav {
+    display: flex; gap: 28px;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .topbar__nav a {
+    color: var(--cream); text-decoration: none;
+    opacity: 0.7; transition: opacity 0.2s, color 0.2s;
+  }
+  .topbar__nav a:hover { opacity: 1; color: var(--gold); }
+  @media (max-width: 880px) { .topbar__nav { display: none; } }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    padding: 120px 32px 80px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(1200px 800px at 20% 30%, rgba(235, 167, 23, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 85% 75%, rgba(235, 167, 23, 0.10), transparent 55%),
+      linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+  }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+  .hero__inner {
+    position: relative; z-index: 2;
+    max-width: 1100px; width: 100%;
+    text-align: center;
+  }
+  .hero__eyebrow {
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .hero__eyebrow::before, .hero__eyebrow::after {
+    content: ''; display: inline-block;
+    width: 32px; height: 1px; background: var(--gold);
+  }
+  .hero__year {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 700;
+    font-size: clamp(96px, 18vw, 240px);
+    line-height: 0.85;
+    color: var(--gold);
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+  .hero__title {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 300;
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    margin-bottom: 40px;
+    font-style: italic;
+  }
+  .hero__title em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .hero__sub {
+    font-size: 13px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 64px;
+  }
+  .hero__cta {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    padding: 16px 36px;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background 0.3s, color 0.3s;
+  }
+  .hero__cta__arrow {
+    display: inline-block;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.3s ease, margin-left 0.3s ease;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .hero__cta:hover { background: var(--gold); color: var(--ink); }
+  .hero__cta:hover .hero__cta__arrow { width: 18px; margin-left: 8px; }
+
+  /* ============ Section primitives ============ */
+  .section { padding: 120px 32px; position: relative; }
+  .section__inner { max-width: var(--maxw); margin: 0 auto; }
+  .section--cream { background: var(--cream); }
+  .section--paper { background: var(--paper); }
+  .section--ink { background: var(--ink); color: var(--cream); }
+  .section--ink-textured {
+    background: var(--ink);
+    background-image:
+      radial-gradient(800px 500px at 70% 20%, rgba(235, 167, 23, 0.10), transparent 60%),
+      radial-gradient(600px 400px at 10% 80%, rgba(235, 167, 23, 0.06), transparent 60%);
+    color: var(--cream);
+  }
+  .eyebrow {
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 1000;
+  }
+  .h-display {
+    font-family: var(--display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 600;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    margin-bottom: 32px;
+  }
+  .h-display em { font-style: italic; color: var(--gold); font-weight: 500; }
+  .h-section {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .h-block {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(24px, 2.6vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+  .lede {
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.55;
+    color: var(--text-mid);
+    max-width: 720px;
+  }
+  .section--ink .lede, .section--ink-textured .lede { color: var(--text-light); }
+  .body-prose p { margin-bottom: 1.2em; max-width: 680px; font-size: 17px; line-height: 1.7; }
+  .body-prose p:last-child { margin-bottom: 0; }
+  .section--ink .body-prose p, .section--ink-textured .body-prose p { color: var(--text-light); }
+
+  /* ============ Opening Letter ============ */
+  .letter {
+    background: var(--cream);
+    padding: 120px 32px;
+  }
+  .letter__grid {
+    max-width: var(--maxw); margin: 0 auto;
+    display: grid; grid-template-columns: 5fr 7fr; gap: 80px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .letter__grid { grid-template-columns: 1fr; gap: 48px; }
+  }
+  .letter__col-left { position: sticky; top: 100px; }
+  @media (max-width: 900px) { .letter__col-left { display: none; } }
+  .leader-card {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 32px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .leader-card__photo {
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(135deg, rgba(235,167,23,0.25), rgba(10,17,25,0)),
+      linear-gradient(180deg, #2a3340 0%, #1a2330 100%);
+    margin-bottom: 24px;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding: 24px;
+    overflow: hidden;
+  }
+  .leader-card__photo::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 30% 40%, rgba(235,167,23,0.18), transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent 50%);
+  }
+  .leader-card__photo-label {
+    position: relative;
+    color: var(--gold);
+    font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase;
+    border: 1px dashed rgba(235,167,23,0.4);
+    padding: 6px 10px;
+  }
+  .leader-card__name {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .leader-card__role {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+  .letter__col-right {}
+  .letter__heading {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(36px, 4.2vw, 56px);
+    line-height: 1.05;
+    margin-bottom: 48px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .letter__heading em { color: var(--gold); font-style: italic; }
+  .letter__body p {
+    margin-bottom: 1.4em;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #2a3340;
+  }
+  .letter__body p:first-child::first-letter {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 5.2em;
+    float: left;
+    line-height: 0.85;
+    margin: 0.06em 0.12em 0 0;
+    color: var(--gold);
+  }
+  .letter__signoff {
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule-light);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 600px) { .letter__signoff { grid-template-columns: 1fr; } }
+  .signoff__name {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .signoff__role {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-top: 4px;
+  }
+
+  /* ============ Mission band ============ */
+  .mission { padding: 120px 32px; background: var(--ink-2); color: var(--cream); position: relative; overflow: hidden; }
+  .mission::before {
+    content: 'MISSION';
+    position: absolute;
+    bottom: -40px; right: -20px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(160px, 22vw, 320px);
+    color: rgba(235,167,23, 0.06);
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    pointer-events: none;
+  }
+  .mission__inner { max-width: var(--maxw); margin: 0 auto; position: relative; z-index: 2; }
+  .mission__statement {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(28px, 3.6vw, 44px);
+    line-height: 1.25;
+    color: var(--cream);
+    max-width: 1000px;
+    margin-bottom: 48px;
+    letter-spacing: -0.01em;
+  }
+  .mission__statement em { font-style: italic; color: var(--gold); }
+  .mission__changing-block {
+    margin-top: 80px;
+    padding-top: 56px;
+    border-top: 1px solid rgba(235,167,23, 0.25);
+  }
+  .mission__changing-block h4 {
+    color: var(--gold);
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 28px;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  .mission__changing-block p {
+    color: var(--cream); opacity: 0.9; font-size: 17px; line-height: 1.7; max-width: 820px;
+  }
+  .mission__pull {
+    margin-top: 48px;
+    padding: 40px 0;
+    border-top: 1px solid rgba(235,167,23, 0.2);
+    border-bottom: 1px solid rgba(235,167,23, 0.2);
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.4;
+    color: var(--cream);
+    max-width: 1000px;
+    letter-spacing: -0.005em;
+  }
+  .mission__pull strong {
+    color: var(--gold);
+    font-weight: 600;
+    font-style: normal;
+  }
+  .mission__pull-source {
+    margin-top: 16px;
+    font-family: var(--sans);
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+  .mission__closing {
+    margin-top: 32px;
+    color: var(--cream); opacity: 0.92; font-size: 17px; line-height: 1.7; max-width: 820px;
+  }
+
+  /* ============ By the numbers ============ */
+  .numbers { background: var(--paper); }
+  .numbers__header { margin-bottom: 80px; }
+  .numbers__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 1000px) { .numbers__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .numbers__grid { grid-template-columns: 1fr; } }
+  .stat-card {
+    background: var(--cream);
+    padding: 40px 28px;
+    text-align: center;
+    position: relative;
+    border-top: 3px solid var(--gold);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(10,17,25,0.08);
+  }
+  .stat-card__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(48px, 5vw, 72px);
+    color: var(--ink);
+    line-height: 0.95;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  .stat-card__label {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    font-weight: 500;
+  }
+  .ecosystem-note {
+    margin-top: 64px;
+    padding: 48px;
+    background: var(--cream);
+    border-left: 3px solid var(--gold);
+    max-width: 1000px;
+  }
+  .ecosystem-note p {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(18px, 1.8vw, 22px);
+    line-height: 1.55;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .ecosystem-note em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  /* ============ Where We Work ============ */
+  .where-we-work { background: var(--paper); padding: 120px 32px; }
+  .where-we-work__inner { max-width: var(--maxw); margin: 0 auto; }
+  .where-we-work__grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    align-items: center;
+    margin-top: 56px;
+  }
+  @media (max-width: 900px) { .where-we-work__grid { grid-template-columns: 1fr; gap: 32px; } }
+  .map-wrap {
+    background: var(--ink);
+    padding: 0;
+    position: relative;
+    border-top: 3px solid var(--gold);
+    overflow: hidden;
+  }
+  #ca-map {
+    width: 100%;
+    height: 600px;
+    background: var(--ink);
+  }
+  @media (max-width: 700px) { #ca-map { height: 480px; } }
+  /* Leaflet container brand overrides */
+  .leaflet-container { background: var(--ink) !important; font-family: var(--sans); }
+  .leaflet-control-attribution {
+    background: rgba(10,17,25,0.85) !important;
+    color: rgba(247,243,236,0.6) !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+  .leaflet-control-attribution a { color: var(--gold) !important; }
+  .leaflet-control-zoom a {
+    background: var(--ink) !important;
+    color: var(--gold) !important;
+    border: 1px solid rgba(235,167,23,0.3) !important;
+  }
+  .leaflet-control-zoom a:hover { background: var(--gold) !important; color: var(--ink) !important; }
+  /* Custom pin markers */
+  .arc-pin {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(10,17,25,0.6), 0 0 8px rgba(235,167,23,0.6);
+    transition: transform 0.2s ease;
+  }
+  .arc-pin:hover { transform: scale(1.4); cursor: pointer; }
+  .arc-pin--ring {
+    background: transparent;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 8px rgba(235,167,23,0.5);
+  }
+  .arc-pin--hq {
+    width: 18px; height: 18px;
+    background: var(--gold);
+    border: 2px solid var(--cream);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(10,17,25,0.7), 0 0 16px rgba(235,167,23,0.9);
+    position: relative;
+    z-index: 2;
+  }
+  .arc-pin--hq::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: -10px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(235,167,23,0.35);
+    animation: pinPulse 2.4s ease-in-out infinite;
+    z-index: -1;
+  }
+  @keyframes pinPulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 0; }
+  }
+  /* Brand popup */
+  .leaflet-popup-content-wrapper {
+    background: var(--ink) !important;
+    color: var(--cream) !important;
+    border-radius: 0 !important;
+    border-left: 3px solid var(--gold);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+  }
+  .leaflet-popup-content {
+    margin: 14px 18px !important;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .leaflet-popup-content strong {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: -0.005em;
+  }
+  .leaflet-popup-content em {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(247,243,236,0.7);
+    font-style: normal;
+    font-weight: 500;
+  }
+  .leaflet-popup-tip { background: var(--ink) !important; }
+  .leaflet-popup-close-button { color: var(--cream) !important; opacity: 0.6; }
+  .leaflet-popup-close-button:hover { opacity: 1; color: var(--gold) !important; }
+  /* Legend */
+  .map-legend {
+    display: flex; flex-wrap: wrap; gap: 16px 24px;
+    padding: 20px 32px;
+    background: var(--cream);
+    font-size: 12px;
+    color: var(--text-mid);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--rule-light);
+  }
+  .map-legend__item { display: flex; align-items: center; gap: 8px; }
+  .map-legend__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+  .map-legend__dot--ring { background: transparent; border: 2px solid var(--gold); }
+  .map-legend__dot--hq {
+    width: 14px; height: 14px;
+    background: var(--gold);
+    border: 2px solid var(--ink);
+    box-shadow: 0 0 6px rgba(235,167,23,0.5);
+  }
+  .footprint-list { display: grid; gap: 24px; }
+  .footprint-item { border-left: 3px solid var(--gold); padding: 16px 0 16px 24px; }
+  .footprint-item__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 38px;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .footprint-item__label {
+    font-size: 14px;
+    color: var(--text-mid);
+    letter-spacing: 0.04em;
+    line-height: 1.45;
+  }
+
+  /* ============ HART evaluation spotlight ============ */
+  .hart-eval {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 120px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hart-eval::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(700px 500px at 80% 30%, rgba(235,167,23, 0.10), transparent 60%);
+  }
+  .hart-eval__inner {
+    max-width: var(--maxw); margin: 0 auto;
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .hart-eval__inner { grid-template-columns: 1fr; } }
+  .hart-eval__head { padding-top: 8px; }
+  .hart-eval__body p {
+    color: var(--cream); opacity: 0.92;
+    font-size: 17px; line-height: 1.75;
+    margin-bottom: 1.2em;
+  }
+  .hart-eval__pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 32px;
+  }
+  @media (max-width: 540px) { .hart-eval__pillars { grid-template-columns: 1fr; } }
+  .hart-pillar { border-top: 2px solid var(--gold); padding: 20px 0 0; }
+  .hart-pillar__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 40px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .hart-pillar__label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream); opacity: 0.85;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* ============ Standalone program section ============ */
+  .program-section { padding: 120px 32px; }
+  .program-section--paper { background: var(--paper); }
+  .program-section--cream { background: var(--cream); }
+  .program-section__inner { max-width: var(--maxw); margin: 0 auto; }
+  .program-section__head {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    align-items: end;
+    margin-bottom: 56px;
+  }
+  @media (max-width: 800px) { .program-section__head { grid-template-columns: 1fr; gap: 24px; } }
+  .program-section__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 32px;
+    padding: 40px 0;
+    border-top: 1px solid var(--rule-light);
+    border-bottom: 1px solid var(--rule-light);
+  }
+  .ps-stat__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(40px, 4vw, 56px);
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .ps-stat__label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* ============ EV / Workforce spotlight ============ */
+  .ev-spotlight {
+    background:
+      linear-gradient(135deg, rgba(10,17,25,0.92), rgba(10,17,25,0.96)),
+      radial-gradient(800px 500px at 70% 30%, rgba(50, 200, 180, 0.12), transparent 65%),
+      linear-gradient(135deg, #0a3340, #0a1119);
+    color: var(--cream);
+    padding: 120px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ev-spotlight::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(0deg, rgba(235,167,23, 0.03) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+  .ev-spotlight__inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 2; }
+  .ev-spotlight__pull {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(20px, 2.2vw, 28px);
+    line-height: 1.45;
+    color: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding-left: 32px;
+    margin: 48px 0;
+    max-width: 800px;
+  }
+  .ev-spotlight__attribution {
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-style: normal;
+    font-weight: 600;
+    font-family: var(--sans);
+  }
+
+  /* ============ Housing sites grid ============ */
+  .housing-sites {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule-light);
+    margin-top: 32px;
+  }
+  @media (max-width: 900px) { .housing-sites { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .housing-sites { grid-template-columns: 1fr; } }
+  .housing-site {
+    background: var(--cream);
+    padding: 32px 24px;
+    border-top: 3px solid var(--gold);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .housing-site:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(10,17,25,0.06);
+  }
+  .housing-site__name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .housing-site__type {
+    font-size: 13px;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+    line-height: 1.45;
+  }
+  .housing-site__location {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule-light);
+  }
+
+  /* ============ Hope & Redemption Center spotlight ============ */
+  .spotlight-hr {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0;
+    overflow: hidden;
+  }
+  .spotlight-hr__grid {
+    display: grid;
+    grid-template-columns: 6fr 6fr;
+    min-height: 600px;
+  }
+  @media (max-width: 900px) { .spotlight-hr__grid { grid-template-columns: 1fr; } }
+  .spotlight-hr__visual {
+    background:
+      linear-gradient(135deg, rgba(235,167,23,0.3), rgba(10,17,25,0)),
+      linear-gradient(180deg, #2a3340 0%, #0a1119 100%);
+    position: relative;
+    min-height: 500px;
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+  }
+  .spotlight-hr__visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 8px);
+  }
+  .photo-tag {
+    color: var(--gold);
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    border: 1px dashed rgba(235,167,23, 0.4);
+    padding: 8px 12px;
+    background: rgba(10,17,25,0.5);
+    backdrop-filter: blur(6px);
+    z-index: 2; position: relative;
+    max-width: 320px;
+  }
+  .spotlight-hr__content {
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  @media (max-width: 600px) { .spotlight-hr__content { padding: 60px 32px; } }
+  .spotlight-hr__address {
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 24px;
+    border-top: 1px solid rgba(235,167,23, 0.3);
+    padding-top: 24px;
+  }
+
+  /* ============ Programs sticky-scroll ============ */
+  .programs-section {
+    background: var(--cream);
+    padding: 120px 32px;
+  }
+  .programs-section__intro {
+    max-width: var(--maxw); margin: 0 auto 80px;
+  }
+  .programs-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    max-width: var(--maxw); margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .programs-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .programs-grid__sticky {
+    position: sticky; top: 100px;
+  }
+  @media (max-width: 900px) { .programs-grid__sticky { display: none; } }
+  .programs-grid__visual {
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(135deg, rgba(235,167,23,0.25), rgba(10,17,25,0.8)),
+      linear-gradient(180deg, #1a2330, #0a1119);
+    position: relative;
+    display: flex; align-items: flex-end; padding: 32px;
+  }
+  .programs-grid__caption {
+    margin-top: 24px;
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--text-mid);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .program-block {
+    padding: 36px 0 36px 0;
+    border-bottom: 1px solid var(--rule-light);
+  }
+  .program-block:first-child { padding-top: 0; }
+  .program-block:last-child { border-bottom: none; }
+  .program-block__eyebrow {
+    color: var(--gold);
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 8px; font-weight: 600;
+  }
+  .program-block h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+  .program-block p {
+    color: var(--text-mid);
+    font-size: 16px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+  .program-block__stats {
+    display: flex; flex-wrap: wrap; gap: 32px;
+    margin-top: 16px;
+  }
+  .pblock-stat {
+    flex: 0 0 auto;
+  }
+  .pblock-stat__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .pblock-stat__label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    font-weight: 500;
+    max-width: 140px;
+  }
+
+  /* ============ Member spotlight quote ============ */
+  .quote-block {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 120px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-block::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 8%;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 480px;
+    color: rgba(235,167,23, 0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .quote-block__inner {
+    max-width: 1000px; margin: 0 auto;
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 800px) { .quote-block__inner { grid-template-columns: 1fr; gap: 32px; } }
+  .quote-block__avatar {
+    aspect-ratio: 1;
+    background:
+      linear-gradient(135deg, rgba(235,167,23,0.4), rgba(10,17,25,0)),
+      linear-gradient(180deg, #2a3340, #1a2330);
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    max-width: 220px;
+  }
+  .quote-block__avatar-tag {
+    color: var(--gold);
+    font-size: 10px; letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+  .quote-block__text {
+    font-family: var(--display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.45;
+    color: var(--cream);
+    margin-bottom: 32px;
+    letter-spacing: -0.005em;
+  }
+  .quote-block__attribution {
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .quote-block__attribution span {
+    display: block;
+    color: var(--text-light);
+    margin-top: 6px;
+    letter-spacing: 0.14em;
+  }
+
+  /* ============ Audio reflection card ============ */
+  .audio-card {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 32px 36px;
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  .audio-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; background: var(--gold);
+  }
+  .audio-card:hover { transform: translateY(-2px); }
+  .audio-card__avatar {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background:
+      linear-gradient(135deg, rgba(235,167,23,0.35), rgba(10,17,25,0)),
+      linear-gradient(180deg, #2a3340, #1a2330);
+    border: 2px solid var(--gold);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .audio-card__body { min-width: 0; }
+  .audio-card__attribution {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 2px;
+    letter-spacing: -0.005em;
+  }
+  .audio-card__role {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .audio-card__quote {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--cream); opacity: 0.92;
+    margin-bottom: 20px;
+    letter-spacing: -0.005em;
+  }
+  .audio-card__quote em { color: var(--gold); font-style: italic; }
+  .audio-card__player {
+    display: flex; align-items: center; gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(235,167,23, 0.2);
+  }
+  .audio-card__play {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, background 0.2s ease;
+    padding: 0;
+  }
+  .audio-card__play:hover {
+    transform: scale(1.08);
+    background: var(--gold-soft);
+  }
+  .audio-card__play svg { display: block; }
+  .audio-card__waveform {
+    flex: 1;
+    display: flex; align-items: center; gap: 2px;
+    height: 32px;
+    min-width: 0;
+  }
+  .audio-card__waveform .bar {
+    flex: 1;
+    background: var(--gold);
+    opacity: 0.55;
+    border-radius: 1px;
+    min-width: 2px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .audio-card.playing .audio-card__waveform .bar {
+    animation: barPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes barPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(0.5); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+  .audio-card__time {
+    font-size: 11px;
+    color: var(--cream); opacity: 0.6;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .audio-card__listen {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  @media (max-width: 600px) {
+    .audio-card { grid-template-columns: 1fr; padding: 28px 24px; }
+    .audio-card__avatar { width: 72px; height: 72px; }
+  }
+
+  /* ============ Firefighter cinematic ============ */
+  .firefighter {
+    background:
+      linear-gradient(180deg, rgba(10,17,25,0.85) 0%, rgba(10,17,25,0.95) 100%),
+      radial-gradient(ellipse at 50% 30%, rgba(235,127,23,0.4), transparent 60%),
+      linear-gradient(135deg, #2a1810, #0a1119);
+    color: var(--cream);
+    padding: 160px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .firefighter::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(235,167,23,0.04) 0 1px, transparent 1px 2px);
+    pointer-events: none;
+  }
+  .firefighter__inner {
+    max-width: 1100px; margin: 0 auto; position: relative; z-index: 2;
+  }
+  .firefighter__eyebrow {
+    color: var(--gold);
+    font-size: 12px; letter-spacing: 0.36em; text-transform: uppercase;
+    margin-bottom: 32px;
+    display: inline-flex; align-items: center; gap: 14px;
+    font-weight: 600;
+  }
+  .firefighter__eyebrow::before {
+    content: ''; display: inline-block;
+    width: 32px; height: 1px; background: var(--gold);
+  }
+  .firefighter__title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(48px, 6.5vw, 88px);
+    line-height: 0.98;
+    color: var(--cream);
+    margin-bottom: 32px;
+    letter-spacing: -0.025em;
+  }
+  .firefighter__title em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .firefighter__lede {
+    font-size: clamp(18px, 1.7vw, 22px);
+    line-height: 1.55;
+    color: var(--text-light);
+    max-width: 760px;
+    margin-bottom: 64px;
+  }
+  .firefighter__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 48px 0;
+    border-top: 1px solid rgba(235,167,23, 0.25);
+    border-bottom: 1px solid rgba(235,167,23, 0.25);
+    margin-bottom: 56px;
+  }
+  @media (max-width: 800px) { .firefighter__stats { grid-template-columns: repeat(2, 1fr); } }
+  .ff-stat__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(36px, 4vw, 56px);
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .ff-stat__label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .firefighter__pull {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(20px, 2.2vw, 28px);
+    line-height: 1.45;
+    color: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding-left: 32px;
+    margin: 48px 0;
+    max-width: 800px;
+  }
+  .firefighter__pull em { color: var(--gold); font-style: italic; }
+
+  /* ============ Member services grid ============ */
+  .services {
+    background: var(--paper);
+    padding: 120px 32px;
+  }
+  .services__inner { max-width: var(--maxw); margin: 0 auto; }
+  .services__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--rule-light);
+    margin-top: 64px;
+  }
+  @media (max-width: 800px) { .services__grid { grid-template-columns: 1fr; } }
+  .service-card {
+    background: var(--paper);
+    padding: 40px 32px;
+    transition: background 0.3s ease;
+    cursor: default;
+  }
+  .service-card:hover { background: var(--cream); }
+  .service-card__title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .service-card__desc {
+    font-size: 14px;
+    color: var(--text-mid);
+    margin-bottom: 24px;
+    line-height: 1.55;
+  }
+  .service-card__stats {
+    display: flex; flex-wrap: wrap; gap: 24px 32px;
+  }
+  .service-card .pblock-stat__num { font-size: 32px; }
+
+  /* ============ Policy wins ============ */
+  .policy {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 120px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .policy::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(800px 500px at 80% 30%, rgba(235, 167, 23, 0.08), transparent 60%);
+  }
+  .policy__inner { max-width: var(--maxw); margin: 0 auto; position: relative; z-index: 2; }
+  .policy__head {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    align-items: end;
+    margin-bottom: 80px;
+  }
+  @media (max-width: 800px) { .policy__head { grid-template-columns: 1fr; } }
+  .policy__bills {
+    border-top: 1px solid rgba(235,167,23, 0.25);
+  }
+  .bill {
+    display: grid;
+    grid-template-columns: 1fr 4fr 1.5fr;
+    gap: 32px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(235,167,23, 0.15);
+    align-items: center;
+  }
+  @media (max-width: 800px) { .bill { grid-template-columns: 1fr; gap: 8px; } }
+  .bill__id {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: -0.01em;
+  }
+  .bill__desc { color: var(--text-light); font-size: 15px; line-height: 1.55; }
+  .bill__status {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid rgba(235,167,23, 0.4);
+    color: var(--gold);
+    text-align: center;
+    width: max-content;
+    font-weight: 600;
+  }
+  .bill__status--passed {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  .bill__status--two-year { color: var(--cream); border-color: rgba(255,255,255,0.3); }
+  .bill__status--did-not-pass { color: var(--text-light); border-color: rgba(255,255,255,0.15); }
+
+  /* ============ Awareness / social growth ============ */
+  .awareness {
+    background: var(--cream);
+    padding: 120px 32px;
+  }
+  .awareness__inner { max-width: var(--maxw); margin: 0 auto; }
+  .awareness__head {
+    display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: end;
+    margin-bottom: 64px;
+  }
+  @media (max-width: 800px) { .awareness__head { grid-template-columns: 1fr; } }
+  .growth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 800px) { .growth-grid { grid-template-columns: 1fr; } }
+  .growth-card {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .growth-card__label {
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .growth-card__metric {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(56px, 6vw, 88px);
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 24px;
+    letter-spacing: -0.025em;
+  }
+  .growth-card__from-to {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .growth-card__arrow {
+    color: var(--gold); font-size: 20px;
+  }
+  .growth-card__sub {
+    color: var(--text-light);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+  }
+  .growth-card__bar {
+    margin-top: 32px;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .growth-card__bar-fill {
+    position: absolute; top: 0; left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+    width: 0%;
+    transition: width 1.6s cubic-bezier(.2,.8,.2,1);
+  }
+  .growth-card.in-view .growth-card__bar-fill { width: var(--target-width, 90%); }
+
+  /* ============ Press logos ============ */
+  .press {
+    background: var(--paper);
+    padding: 120px 32px;
+  }
+  .press__inner { max-width: var(--maxw); margin: 0 auto; }
+  .press__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--rule-light);
+    margin-top: 64px;
+  }
+  @media (max-width: 1100px) { .press__grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 700px) { .press__grid { grid-template-columns: repeat(2, 1fr); } }
+  .press-cell {
+    background: var(--paper);
+    padding: 36px 18px;
+    text-align: center;
+    color: var(--ink);
+    transition: background 0.25s, color 0.25s;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 110px;
+  }
+  .press-cell:hover { background: var(--ink); color: var(--gold); }
+  /* Masthead-style typography variations to evoke real publication logos */
+  .ml-serif-bold { font-family: 'Playfair Display', Georgia, serif; font-weight: 900; font-size: 18px; letter-spacing: -0.02em; }
+  .ml-serif-italic { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-style: italic; font-size: 19px; letter-spacing: -0.01em; }
+  .ml-condensed { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; }
+  .ml-display-serif { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 19px; letter-spacing: -0.01em; }
+  .ml-modern { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .ml-fraunces-italic { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 19px; letter-spacing: -0.01em; }
+  .ml-sans-bold { font-family: var(--sans); font-weight: 700; font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase; }
+  .ml-script-feel { font-family: 'Fraunces', serif; font-weight: 500; font-style: italic; font-size: 21px; letter-spacing: -0.02em; }
+
+  /* ============ Looking ahead 2027 ============ */
+  .ahead {
+    background: var(--ink-2);
+    color: var(--cream);
+    padding: 140px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ahead::before {
+    content: '2027';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(220px, 32vw, 480px);
+    color: rgba(235,167,23, 0.05);
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    pointer-events: none;
+  }
+  .ahead__inner { max-width: var(--maxw); margin: 0 auto; position: relative; z-index: 2; }
+  /* Readability fix: high-contrast text on dark blue BG */
+  .ahead .lede { color: var(--cream); opacity: 0.95; }
+  .ahead p { color: var(--cream); opacity: 0.92; }
+  .ahead .pillar__desc { color: var(--cream); opacity: 0.92; }
+  .ahead .legacy-stat__label { color: var(--cream); opacity: 0.92; }
+  .ahead__legacy {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding: 48px 0;
+    border-top: 1px solid rgba(235,167,23, 0.25);
+    border-bottom: 1px solid rgba(235,167,23, 0.25);
+    margin: 64px 0 96px;
+  }
+  @media (max-width: 800px) { .ahead__legacy { grid-template-columns: repeat(2, 1fr); } }
+  .legacy-stat__num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(32px, 3.6vw, 48px);
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .legacy-stat__label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    line-height: 1.4;
+  }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  @media (max-width: 900px) { .pillars { grid-template-columns: 1fr; } }
+  .pillar {
+    border-top: 3px solid var(--gold);
+    padding: 32px 0 0;
+  }
+  .pillar__num {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.32em;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .pillar__title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--cream);
+    margin-bottom: 16px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .pillar__desc {
+    color: var(--text-light);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ============ Financials ============ */
+  .financials {
+    background: var(--cream);
+    padding: 120px 32px;
+  }
+  .financials__inner { max-width: var(--maxw); margin: 0 auto; }
+  .financials__grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    margin-top: 64px;
+    align-items: center;
+  }
+  @media (max-width: 900px) { .financials__grid { grid-template-columns: 1fr; gap: 48px; } }
+  .donut-wrap { text-align: center; }
+  .donut-wrap h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .donut-svg { width: 100%; max-width: 320px; height: auto; }
+  .donut-legend {
+    margin-top: 24px;
+    text-align: left;
+    max-width: 320px;
+    margin-left: auto; margin-right: auto;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px dashed var(--rule-light);
+  }
+  .legend-item:last-child { border-bottom: none; }
+  .legend-swatch {
+    width: 14px; height: 14px; flex: 0 0 14px;
+  }
+  .legend-item__label { flex: 1; color: var(--text-mid); }
+  .legend-item__pct { color: var(--ink); font-weight: 600; }
+  .financials-callout {
+    margin-top: 80px;
+    padding: 48px 32px;
+    background: var(--ink);
+    color: var(--cream);
+    text-align: center;
+    border-top: 4px solid var(--gold);
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .financials-callout__metric {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(64px, 8vw, 96px);
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+  .financials-callout__label {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(18px, 1.8vw, 22px);
+    color: var(--cream);
+    line-height: 1.4;
+    margin-bottom: 16px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .financials-callout__sub {
+    font-size: 11px;
+    color: var(--cream);
+    opacity: 0.65;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.5;
+  }
+
+  /* ============ Take action / footer ============ */
+  .take-action {
+    background:
+      linear-gradient(180deg, rgba(10,17,25,0.92) 0%, rgba(10,17,25,1) 100%),
+      radial-gradient(ellipse at 70% 30%, rgba(235,167,23, 0.25), transparent 60%);
+    color: var(--cream);
+    padding: 140px 32px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .take-action::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(45deg, rgba(235,167,23, 0.03) 0 2px, transparent 2px 12px);
+    pointer-events: none;
+  }
+  .take-action__inner { max-width: var(--maxw); margin: 0 auto; position: relative; z-index: 2; }
+  .take-action__lede {
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.5;
+    color: var(--text-light);
+    max-width: 760px;
+    margin-bottom: 56px;
+  }
+  .take-action__cta-row {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 80px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 18px 36px;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn--gold { background: var(--gold); color: var(--ink); border: 1px solid var(--gold); }
+  .btn--gold:hover { background: transparent; color: var(--gold); }
+  .btn--ghost { background: transparent; color: var(--cream); border: 1px solid rgba(255,255,255,0.3); }
+  .btn--ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-top: 64px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  .footer-col h5 {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .footer-col p, .footer-col a {
+    color: var(--text-light);
+    font-size: 14px;
+    line-height: 1.7;
+    text-decoration: none;
+    display: block;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px;
+    color: var(--text-light);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-bottom__brand {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============ Reveal animations ============ */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  .reveal--delay-1 { transition-delay: 0.08s; }
+  .reveal--delay-2 { transition-delay: 0.16s; }
+  .reveal--delay-3 { transition-delay: 0.24s; }
+  .reveal--delay-4 { transition-delay: 0.32s; }
+
+  /* ============ Section divider ornament ============ */
+  .ornament {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    margin: 0 auto 24px;
+  }
+  .ornament__line { width: 32px; height: 1px; background: var(--gold); }
+  .ornament__dot { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); }
+
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress"><div class="progress__bar" id="progressBar"></div></div>
+
+<!-- Top bar -->
+<div class="topbar" id="topbar">
+  <a href="#top" class="topbar__logo">ARC · 2025 Impact Report</a>
+  <nav class="topbar__nav">
+    <a href="#letter">Letter</a>
+    <a href="#mission">ARC in 2025</a>
+    <a href="#programs">Programs & Impact</a>
+    <a href="#policy">Policy & Awareness</a>
+ <a href="#fire">Firefighter Fund</a>
+    <a href="#ahead">Up Next</a>
+  </nav>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero__inner">
+    <div class="hero__eyebrow reveal">Anti-Recidivism Coalition</div>
+    <div class="hero__year reveal reveal--delay-1">2025</div>
+    <h1 class="hero__title reveal reveal--delay-2">
+      Meeting the moment.<br><em>Building a better tomorrow.</em>
+    </h1>
+    <div class="hero__sub reveal reveal--delay-3">Annual Impact Report</div>
+    <a href="#letter" class="hero__cta reveal reveal--delay-4">Begin<span class="hero__cta__arrow"> →</span></a>
+  </div>
+</section>
+
+<!-- OPENING LETTER -->
+<section class="letter" id="letter">
+  <div class="letter__grid">
+    <aside class="letter__col-left">
+      <div class="leader-card reveal">
+        <div class="leader-card__photo">
+          <img src="assets/jerome_dixon_letter.jpg" alt="Jerome Dixon — Board Chair portrait" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;" />
+        </div>
+        <div class="leader-card__name">Jerome Dixon</div>
+        <div class="leader-card__role">Board Chair</div>
+      </div>
+      <div class="leader-card reveal reveal--delay-1">
+        <div class="leader-card__photo">
+          <img src="assets/rob_woronoff_letter.jpg" alt="Rob Woronoff — Interim Executive Director portrait" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;" />
+        </div>
+        <div class="leader-card__name">Rob Woronoff</div>
+        <div class="leader-card__role">Interim Executive Director</div>
+      </div>
+    </aside>
+
+    <div class="letter__col-right reveal">
+      <div class="eyebrow">A Letter From Leadership</div>
+      <h2 class="letter__heading">Our work centers on <em>transition.</em></h2>
+      <div class="letter__body">
+        <p>Dear Friends,</p>
+
+        <p>Our work centers on transition. Each day, we guide people moving from life inside to life outside and share stories and advocate for change that can transform perceptions of those whose lives have been affected by the criminal justice system.</p>
+
+        <p>This year, we faced the resurgence of tough-on-crime policies, the expansion of the federal death penalty, increased immigration enforcement involving local law enforcement, and challenges to hard-won progressive reforms. But we knew that change was still possible, even if it felt like new roadblocks were appearing in our way.</p>
+
+        <p>We trained hundreds of members and made sure our partners and friends with lived experience were front and center as we advocated for legislation that would raise pay for incarcerated workers, expunge records, reduce the incarceration of pregnant and postpartum people, and end slavery and forced prison labor in California.</p>
+
+        <p>It was also a time of transition for the Anti-Recidivism Coalition's leadership. As we celebrated Sam Lewis's leadership over the prior six years, we also reflected on the thousands of lives changed for the better and looked ahead to what comes next. It was a profound moment of living into our mission, vision, and values when the Board appointed both of us — Jerome as ARC's first-ever formerly incarcerated Board Chair, and Rob as Interim Executive Director — to keep ARC moving forward. We're both proud to be walking side by side with our members, staff, and supporters today to accomplish the mission.</p>
+
+        <p>We can't reflect on 2025 without well-deserved recognition for the nearly 1,000 incarcerated firefighters who battled the Palisades Fire right as we kicked off the new year. Folks like Jose Angel Amezcua, who reflected in his moving op-ed: <em>"Amid the smoke, ash, and destruction of the LA fires, people saw us as heroes, recognizing the good we could achieve when given a second chance."</em> These brave individuals, like Jose, earned less than $11 per day and fought tirelessly to save people's lives and homes. The moment was eye-opening for many Americans — more than 15 million of whom watched our video content and social media reels. They got a different kind of glimpse into life inside, shared messages of gratitude, and helped us raise $1.5M for ARC's Firefighter Fund to support members of incarcerated fire crews returning home.</p>
+
+        <p>This year, we proudly opened our new headquarters — the Hope and Redemption Center in Echo Park — strengthening our roots in Southern California. The Center is already serving as a vital hub for community support, helping to make recidivism a thing of the past. At the same time, people are able to access our services at the Center, marking a significant step forward in our outreach and impact.</p>
+
+        <p>We have a vision to expand our services and strengthen the organization's sustainability, enabling us to reach even more communities impacted by incarceration. The journey toward justice and redemption is ongoing, and we are grateful to share it with you.</p>
+
+        <p style="font-family: var(--display); font-style: italic; font-weight: 400; font-size: 19px; margin-top: 1.6em;">With gratitude, commitment, and shared purpose,</p>
+      </div>
+
+      <div class="letter__signoff">
+        <div>
+          <div class="signoff__name">Jerome Dixon</div>
+          <div class="signoff__role">Board Chair</div>
+        </div>
+        <div>
+          <div class="signoff__name">Rob Woronoff</div>
+          <div class="signoff__role">Interim Executive Director</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- MISSION -->
+<section class="mission" id="mission">
+  <div class="mission__inner">
+    <div class="eyebrow reveal">Mission &amp; Values</div>
+    <p class="mission__statement reveal reveal--delay-1">
+      ARC empowers formerly and currently incarcerated people to thrive by providing a support network, comprehensive reentry services, and opportunities to advocate for policy change. The long-lasting impact is making our communities <em>safe, healthy, and whole.</em>
+    </p>
+
+    <div class="mission__changing-block reveal">
+      <h4>Responding to a changing criminal justice landscape.</h4>
+      <p>A more conservative legislative and judicial environment took shape this year, marked by a resurgence of tough-on-crime policies, the expansion of the federal death penalty, increased immigration enforcement involving local law enforcement, and challenges to hard-won progressive reforms from the Supreme Court.</p>
+      <p style="margin-top: 16px;">History offers a telling data point.</p>
+    </div>
+
+    <div class="mission__pull reveal">
+      Of nearly <strong>30,000 people</strong> released under the 2018 First Step Act, roughly <strong>88% were not rearrested or reincarcerated</strong> — compared to a typical federal recidivism rate of <strong>45%</strong>.
+      <div class="mission__pull-source">The First Step Act, by the data</div>
+    </div>
+
+    <p class="mission__closing reveal"><em style="color: var(--gold); font-style: italic;">When people were given real support, real community, and real opportunity, they didn't go back.</em> That is exactly what ARC has been building for over a decade. In a political moment that may close certain doors, ARC's proven model, deep community trust, and commitment to telling the human stories behind the statistics position the organization to lead criminal justice reform.</p>
+  </div>
+</section>
+
+<!-- WHERE WE WORK MAP -->
+<section class="where-we-work">
+  <div class="where-we-work__inner">
+    <div class="reveal">
+      <div class="eyebrow">Where We Work</div>
+      <h2 class="h-display">A statewide footprint, <em>built case by case.</em></h2>
+      <p class="lede">From Los Angeles County to the Sacramento region, ARC's programs and partnerships now reach across California — inside prisons and juvenile facilities, in transitional housing, on training campuses, and in the communities our members are returning to.</p>
+    </div>
+
+    <div class="where-we-work__grid">
+      <aside class="footprint-list reveal">
+        <div class="footprint-item">
+          <div class="footprint-item__num">25+</div>
+          <div class="footprint-item__label">CDCR prisons reached through HART programming</div>
+        </div>
+        <div class="footprint-item">
+          <div class="footprint-item__num">2</div>
+          <div class="footprint-item__label">Counties with Credible Messengers inside juvenile facilities</div>
+        </div>
+        <div class="footprint-item">
+          <div class="footprint-item__num">2</div>
+          <div class="footprint-item__label">Regional offices: Los Angeles &amp; Sacramento</div>
+        </div>
+        <div class="footprint-item">
+          <div class="footprint-item__num">1</div>
+          <div class="footprint-item__label">New HQ: The Hope &amp; Redemption Center, Echo Park</div>
+        </div>
+      </aside>
+
+      <div class="map-wrap reveal reveal--delay-1">
+        <div id="ca-map" aria-label="Interactive map of ARC's California presence"></div>
+
+        <div class="map-legend">
+          <div class="map-legend__item"><div class="map-legend__dot map-legend__dot--hq"></div>ARC Office &amp; HQ</div>
+          <div class="map-legend__item"><div class="map-legend__dot"></div>CDCR Facility with HART Programming</div>
+          <div class="map-legend__item"><div class="map-legend__dot map-legend__dot--ring"></div>Training &amp; Conservation Site</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS STICKY-SCROLL -->
+<section class="programs-section" id="programs">
+  <div class="section__inner">
+    <div class="numbers__header reveal">
+      <div class="ornament"><div class="ornament__line"></div><div class="ornament__dot"></div><div class="ornament__line"></div></div>
+      <div class="eyebrow" style="text-align:center;">Our Impact</div>
+      <h2 class="h-display" style="text-align:center; max-width: 900px; margin: 0 auto;">Successful reentry happens because <em>someone showed up.</em></h2>
+      <p class="lede" style="text-align:center; margin: 24px auto 0;">A ride. A job lead. A second chance that actually held. In 2025, ARC showed up for those moments — giving thousands across California the resources and support they needed to thrive.</p><p></p>
+      <p class="lede" style="text-align:center; margin: 24px auto 0;">Our programmatic work spans across multiple impact areas that <em>interconnect to build an ecosystem of reentry support.</em> These programs are intentionally designed to overlap, complementing and strengthening one another. From youth mentorship and mental health services inside juvenile detention centers, to career readiness programs, to policy initiatives, and beyond — we strive to ensure our programs meet the wide array of needs people impacted by incarceration and reentering society have, forging sustainable pathways that foster security, belonging, and success.</p>
+    </div>
+    <div class="numbers__grid">
+      <div class="stat-card reveal"><div class="stat-card__num" data-count="460">460</div><div class="stat-card__label">New Members</div></div>
+      <div class="stat-card reveal reveal--delay-1"><div class="stat-card__num" data-count="1052">1,052</div><div class="stat-card__label">Active Members</div></div>
+      <div class="stat-card reveal reveal--delay-2"><div class="stat-card__num" data-count="129">129</div><div class="stat-card__label">Alumni Members</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOPE & REDEMPTION CENTER SPOTLIGHT -->
+<section class="spotlight-hr">
+  <div class="spotlight-hr__grid">
+    <div class="spotlight-hr__visual">
+      <img src="assets/hope_and_redemption_center_spotlight.jpg" alt="Hope &amp; Redemption Center — exterior in Echo Park, grand opening day" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;" />
+    </div>
+    <div class="spotlight-hr__content reveal">
+      <div class="eyebrow">Spotlight</div>
+      <h2 class="h-section" style="color: var(--cream); margin-bottom: 24px;">ARC Hope and Redemption Center.</h2>
+      <div class="body-prose">
+        <p>In March 2025, we celebrated the grand opening of our new headquarters — the Hope and Redemption Center in Echo Park. This groundbreaking center is designed to support formerly incarcerated individuals as they rebuild their lives and reintegrate into their communities.</p>
+        <p>The Hope and Redemption Center offers an array of workforce development programs, life coaching, mentoring, and therapy, empowering individuals to take the next steps in their journey.</p>
+      </div>
+      <div class="spotlight-hr__address">Echo Park, Los Angeles · Opened March 2025</div>
+    </div>
+  </div>
+</section>
+
+<!-- MILLARD HILL MEMBER SPOTLIGHT — moved to before Inside Programs -->
+<section class="quote-block">
+  <div class="quote-block__inner">
+    <div class="quote-block__avatar reveal">
+      <div class="quote-block__avatar-tag">
+        <img src="assets/Millard_hill_spotlight.jpg" alt="Millard Hill — ARC Member" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%;display:block;" />
+      </div>
+    </div>
+    <div class="reveal reveal--delay-1">
+      <p class="quote-block__text">When I was 18, I got caught up with the wrong crowd and ended up spending four years in L.A. County jail — years that felt like 'Hell on earth' and kept me away from my family and most of the beginning of my twenties. After my release, I connected with ARC, where I found real mentorship, guidance, and support from people who understood my experience. ARC helped me stay focused on school, supported me with a scholarship, and gave me a community that kept pushing me forward. Now I'm a junior accounting major at Howard University, proud to be writing a new chapter for my life — one where <em>I'm holding the pen.</em></p>
+      <div class="quote-block__attribution">Millard Hill <span>Member Spotlight · ARC Member</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS STICKY-SCROLL -->
+<section class="programs-section" id="programs">
+  <div class="programs-section__intro reveal">
+    <div class="eyebrow">Inside Programs</div>
+    <h2 class="h-display">A second chance starts <em>on the inside.</em></h2>
+    <p class="lede">Our Inside Programs focus on building the knowledge, skills, and confidence our community members need to reenter the outside world before they leave detention. ARC staff, members, and volunteers visit the California prison system to provide rehabilitative programming and host policy workshops that bring hope to thousands of people who are incarcerated.</p>
+  </div>
+
+  <div class="programs-grid">
+    <aside class="programs-grid__sticky reveal">
+      <div class="programs-grid__visual" style="background: #0a1119; padding: 0; overflow: hidden;">
+<a href="https://www.instagram.com/reel/DL7-YfUvRUe/">
+        <img
+          src="assets/Credible_Messengers.gif"
+          alt="Credible Messengers"
+          style="width:100%;height:100%;object-fit:cover;display:block;"
+        /> </a>
+      </div>
+      <p class="programs-grid__caption"><a href="https://www.instagram.com/reel/DL7-YfUvRUe/">Watch this Reel on ARC Instagram — real stories, real impact.</a></p>
+    </aside>
+
+    <div>
+      <div class="program-block reveal">
+        <div class="eyebrow">HART · Hope and Redemption Team Inside</div>
+        <h3>A team of formerly incarcerated ARC staff members leading rehabilitative programming and reentry support in every prison in California.</h3>
+        <div class="program-block__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="6185">6,185</div><div class="pblock-stat__label">HART Participants</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="3635">3,635</div><div class="pblock-stat__label">HART Graduates</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="28">28</div><div class="pblock-stat__label">Life Coaches Statewide</div></div>
+        </div>
+<div></p></p>
+        <div class="eyebrow">Credible Messengers</div>
+        <h3 class="h-section">Formerly incarcerated mentors leveraging their lived experience to help rehabilitate young people. Overseen by our youth department, we provide credible messenger mentorship to incarcerated youth in multiple county juvenile facilities in Sacramento and Los Angeles Counties.</h3>
+<div class="program-block__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="198">198</div><div class="pblock-stat__label">Youth Served Inside LA County Juvenile Facilities</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="120">120</div><div class="pblock-stat__label">Youth Served Inside Sacramento Juvenile Facilities</div></div>
+        </div></p>
+<div>
+      </div>
+    </div>
+</section>
+
+<!-- HART EVALUATION SPOTLIGHT (restored) -->
+<section class="hart-eval">
+  <div class="hart-eval__inner">
+    <div class="hart-eval__head reveal">
+      <div class="eyebrow">Spotlight · Program Evaluation</div>
+      <h2 class="h-section" style="color: var(--cream);">HART reduces criminal thinking, violence, and barriers to reentry.</h2>
+    </div>
+
+    <div class="hart-eval__body reveal reveal--delay-1">
+      <p>Fighting for a second chance and seeing a future of possibility doesn't start at re-entry — it starts on the inside. Our Hope and Redemption Team (HART) provides trauma-informed programming for incarcerated individuals across California, led by Life Coaches who are formerly incarcerated themselves.</p>
+
+      <p>Since 2017, the program has expanded statewide, now employing 28 Life Coaches and reaching far more institutions thanks to increased state support. HART offers group programs on emotional intelligence, criminal thinking, and parole readiness — all designed to help participants overcome barriers to rehabilitation and reentry. Life Coaches guide participants through these challenges, drawing on their own lived experience.</p>
+
+      <p>Nearly all participants rated HART highly, with most reporting <strong style="color: var(--gold);">reduced criminal thinking and fewer violent incidents.</strong> HART's impact also extends to reentry, with participants receiving transitional housing, job support, therapy, and mentorship through ARC — all of which are crucial for long-term reintegration.</p>
+
+      <div class="hart-eval__pillars">
+        <div class="hart-pillar">
+          <div class="hart-pillar__num">↓</div>
+          <div class="hart-pillar__label">Reduced Criminal Thinking</div>
+        </div>
+        <div class="hart-pillar">
+          <div class="hart-pillar__num">↓</div>
+          <div class="hart-pillar__label">Fewer Violent Incidents Reported</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- YOUTH DEPARTMENT (NOW STANDALONE) -->
+<section class="program-section program-section--cream">
+  <div class="program-section__inner">
+    <div class="program-section__head reveal">
+      <div>
+        <div class="eyebrow">Youth Department</div>
+        <h2 class="h-section">Mentorship inside, support outside, <em>all the way through.</em></h2>
+      </div>
+      <div>
+        <p class="lede">ARC serves transitional-aged youth both inside juvenile facilities and in the community, providing mentorship, housing, and the support they need to build a life beyond the system.</p>
+      </div>
+    </div>
+
+    <div class="program-section__stats reveal">
+      <div>
+        <div class="ps-stat__num" data-count="205">205</div>
+        <div class="ps-stat__label">Transitional-Aged-Youth (TAY) Members</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="26">26</div>
+        <div class="ps-stat__label">TAY in ARC Housing</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="198">198</div>
+        <div class="ps-stat__label">Youth Served Inside LA County Juvenile Facilities</div>
+      </div>
+    </div>
+
+    <div class="audio-card reveal">
+      <div class="audio-card__avatar" style="overflow:hidden;">
+        <img src="assets/jason_holland_quote.jpeg" alt="Jason Holland" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" />
+      </div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Jason Holland</div>
+        <div class="audio-card__role">Director of Youth Development · 1 Year at ARC</div>
+        <p class="audio-card__quote">"The most rewarding part of this work is watching a team grow increasingly effective in serving the people who need them most. A moment that stands out is when I received a call from a young man, now attending Howard University in D.C., reaching out to support our police team. I was given the opportunity to hear his story on how far he had come since his release four years ago. For me, this represented all that is possible <em>with the right community by one's side.</em> He came from a dark place but was able to build himself up into a position where now he is reaching back to provide a service himself."</p>
+     
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SACRAMENTO OFFICE (NOW STANDALONE) -->
+<section class="program-section program-section--paper">
+  <div class="program-section__inner">
+    <div class="program-section__head reveal">
+      <div>
+        <div class="eyebrow">Sacramento Office</div>
+        <h2 class="h-section">The need for second chances <em>doesn't stop at Los Angeles.</em></h2>
+      </div>
+      <div>
+        <p class="lede">ARC's Sacramento office serves members across the region with case management, housing, workforce development, clinical therapy, and opportunities to advocate for change.</p>
+      </div>
+    </div>
+
+    <div class="program-section__stats reveal">
+      <div>
+        <div class="ps-stat__num" data-count="255">255</div>
+        <div class="ps-stat__label">Members Served</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="199">199</div>
+        <div class="ps-stat__label">New Members</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="54">54</div>
+        <div class="ps-stat__label">Youth Served Inside Sacramento Juvenile Facilities</div>
+      </div>
+    </div>
+
+    <div class="audio-card reveal">
+
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Junior Vargas</div>
+        <div class="audio-card__role">Director of Sacramento · 4.5 Years at ARC</div>
+        <p class="audio-card__quote">"The most rewarding thing is seeing people come home, start with nothing, and reach a stability of life that they would have never imagined. In 2025, a youth member we mentored inside came home, enrolled in barber school, got a job as a full-time barber, and now <em>comes into our office to do free haircuts</em> to our population that is fresh from coming home."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBER SERVICES -->
+<section class="services">
+  <div class="services__inner">
+    <div class="reveal">
+      <div class="eyebrow">Member Services</div>
+      <h2 class="h-display">A network you don't have to <em>build alone.</em></h2>
+      <p class="lede">Members have access to supportive services including case management, trauma-informed counseling, housing, education, employment training, and mentorship. At its core, ARC members form a support network for each other as they make their way in the world.</p>
+    </div>
+
+    <!-- Image placeholder: Member Services · Family Engagement -->
+    <div class="reveal" style="margin-top: 64px; margin-bottom: 0;">
+      <img src="assets/member_services.jpg" style="
+        width: 100%;
+        <!--aspect-ratio: 16/9;-->
+        background: linear-gradient(135deg, #1B2530 0%, #2a3340 100%);
+        border: 2px dashed rgba(235,167,23,0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+      ">
+<!--        <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(235,167,23,0.03) 0 2px,transparent 2px 12px);pointer-events:none;"></div>
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.5;">
+          <rect x="4" y="10" width="40" height="28" rx="2" stroke="#EBA717" stroke-width="2" fill="none"/>
+          <circle cx="24" cy="24" r="7" stroke="#EBA717" stroke-width="2" fill="none"/>
+          <circle cx="38" cy="14" r="3" stroke="#EBA717" stroke-width="1.5" fill="none"/>
+        </svg>
+        <div style="color:var(--gold);font-size:11px;letter-spacing:0.32em;text-transform:uppercase;font-family:var(--sans);font-weight:600;opacity:0.8;">Photo Placeholder</div>
+        <div style="color:var(--text-light);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-family:var(--sans);opacity:0.55;">Member Services · Family Engagement</div>-->
+      </div>
+    </div>
+
+    <div class="services__grid">
+      <div class="service-card reveal">
+        <div class="service-card__title">Ride Home Program</div>
+        <div class="service-card__desc">Picking up members from prison the day they walk free, easing the first hours of reentry.</div>
+        <div class="service-card__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="317">317</div><div class="pblock-stat__label">Rides Home in 2025</div></div>
+        </div>
+      </div>
+      <div class="service-card reveal reveal--delay-1">
+        <div class="service-card__title">Life Coaching</div>
+        <div class="service-card__desc">Every member is matched with a coach. Coaching is the connective tissue of every other service.</div>
+        <div class="service-card__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num">100%</div><div class="pblock-stat__label">Of Members Coached</div></div>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-card__title">Mental Health</div>
+        <div class="service-card__desc">Trauma-informed therapy and support groups designed for the long arc of reentry.</div>
+        <div class="service-card__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="2591">2,591</div><div class="pblock-stat__label">Therapy Sessions</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="345">345</div><div class="pblock-stat__label">Support Group Attendees</div></div>
+        </div>
+      </div>
+      <div class="service-card reveal reveal--delay-1">
+        <div class="service-card__title">Expungement &amp; Legal Services</div>
+        <div class="service-card__desc">Removing the barriers built into someone's record. Full clinics. Full follow-through.</div>
+        <div class="service-card__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="323">323</div><div class="pblock-stat__label">Clinic Attendees</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="341">341</div><div class="pblock-stat__label">Petitions Filed</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="174">174</div><div class="pblock-stat__label">Petitions Granted</div></div>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-card__title">Family Engagement</div>
+        <div class="service-card__desc">Uniting families with their loved ones in Pine Grove and Growlersburg Conservation Camps.</div>
+        <div class="service-card__stats">
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="122">122</div><div class="pblock-stat__label">Families Reunited</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="6">6</div><div class="pblock-stat__label">Visits at Pine Grove &amp; Growlersburg</div></div>
+          <div class="pblock-stat"><div class="pblock-stat__num" data-count="250">250</div><div class="pblock-stat__label">Live Scans Issued</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="audio-card reveal">
+      <div class="audio-card__avatar" style="overflow:hidden;"><img src="assets/Carlos_Cervantes_quote.jpg" alt="Carlos Cervantes" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" /></div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Carlos Cervantes</div>
+        <div class="audio-card__role">Director of Member Services · ARC Member since 2011 · 9 Years on Staff</div>
+        <p class="audio-card__quote">"Welcoming our people home to their community after incarceration is the most rewarding part of this work. <em>Having members experience their first Laker game, their first birthday with family, their first real job</em> — those moments remind you exactly why this work matters."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOUSING (FULL PROSE) -->
+<section class="program-section program-section--cream">
+  <div class="program-section__inner">
+    <div class="program-section__head reveal">
+      <div>
+        <div class="eyebrow">Housing</div>
+        <h2 class="h-section">A door, a key, and <em>a home to come home to.</em></h2>
+      </div>
+      <div>
+        <p class="lede">For nearly a decade, ARC has provided effective transitional housing services for formerly incarcerated individuals returning home to Los Angeles County, with on-site life skills programming, trauma counseling, education and employment guidance, and live-in mentors who promote independent living and wellness.</p>
+      </div>
+    </div>
+
+    <div class="program-section__stats reveal" style="margin-bottom: 56px;">
+      <div>
+        <div class="ps-stat__num" data-count="141">141</div>
+        <div class="ps-stat__label">People in ARC Housing</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="26">26</div>
+        <div class="ps-stat__label">Transitional-Aged Youth Housed</div>
+      </div>
+      <div>
+        <div class="ps-stat__num">4</div>
+        <div class="ps-stat__label">Active Transitional Housing Sites</div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-bottom: 40px;">
+      <h3 class="h-block" style="margin-bottom: 16px;">A history of building places to land.</h3>
+      <p class="body-prose"><p style="max-width: 820px;">ARC launched its first transitional housing program, <strong>Bromont</strong>, in September 2014 in Sylmar, California, for individuals returning home from incarceration after long sentences of ten years or more. By providing wraparound services and a safe place to land, ARC works to reduce recidivism and improve reentry outcomes for formerly incarcerated individuals returning to Los Angeles County and beyond.</p></p>
+    </div>
+
+    <!-- Housing sites grid -->
+    <div class="housing-sites reveal">
+      <div class="housing-site">
+        <div class="housing-site__name">Casa Catalina</div>
+        <div class="housing-site__type">Youth Transitional Housing Program</div>
+        <div class="housing-site__location">Burbank, CA</div>
+      </div>
+      <div class="housing-site">
+        <div class="housing-site__name">Lorena</div>
+        <div class="housing-site__type">Adult Transitional Housing Program</div>
+        <div class="housing-site__location">Boyle Heights, CA</div>
+      </div>
+      <div class="housing-site">
+        <div class="housing-site__name">Hollywood CPR Dorm</div>
+        <div class="housing-site__type">Transitional Housing</div>
+        <div class="housing-site__location">Atwater Village, CA</div>
+      </div>
+      <div class="housing-site">
+        <div class="housing-site__name">Sacramento Site</div>
+        <div class="housing-site__type">Transitional Housing</div>
+        <div class="housing-site__location">Sacramento, CA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VENTURA and LA COUNTY TRAINING SPOTLIGHT -->
+<section class="hart-eval">
+  <div class="hart-eval__inner">
+    <div class="hart-eval__head reveal">
+      <div class="eyebrow">Spotlight · Ventura Training Center</div>
+      <h2 class="h-section" style="color: var(--cream);">For formerly incarcerated firefighters, coming home is just the beginning.</h2>
+    </div>
+
+    <div class="hart-eval__body reveal reveal--delay-1">
+      <p>Launched in 2018 in partnership with CAL FIRE, the California Conservation Corps, and the California Department of Corrections and Rehabilitation, the Ventura Training Center (VTC) is an 18-month residential program that gives people who fought fires while incarcerated a pathway to build a career when they reenter society. Participants live on-site while receiving advanced firefighter training, certifications, and job readiness support. They also receive life skills programming, one-on-one counseling, health and wellness support, and educational opportunities. VTC opens doors to entry-level firefighting careers with state, federal, and local agencies. </p>
+<p>Since its launch, the results have spoken for themselves. VTC has enrolled 481 participants since its inception, achieved 321 job placements, earned a 68% employment rate, and awarded 219 Firefighter Academy Certifications. For people who once earned less than $11 a day fighting California's most devastating fires, VTC turns that courage into a career. </p>
+  </div>
+</section>
+<section class="hart-eval">
+<div class="hart-eval__inner">
+    <div class="hart-eval__head reveal">
+      <div class="eyebrow">Spotlight · Los Angeles County Training Center</div>
+      <h2 class="h-section" style="color: var(--cream);">ARC's record in housing and workforce development opened a new door in 2025.</h2>
+    </div>
+
+    <div class="hart-eval__body reveal reveal--delay-1">
+      <p>Los Angeles County's Justice, Care, and Opportunities Department , in partnership with Amity Foundation and the Forestry and Fire Recruitment Program, selected ARC to oversee the new Los Angeles County Training Center (LACTC) in Calabasas. This residential vocational training program was modeled after the Ventura Training Center and was built for the next generation.</p>
+<p>While living on-site, LACTC provides formerly incarcerated and former foster youth ages 18–27 with the certifications and the hands-on training they need to enter fire service, forestry, hazmat, and more. Participants receive everything needed to remove barriers and build a future, from free housing, meals, and life skills training, to case management, expungement assistance, and job placement support.</p> 
+<p>In 2025, LACTC made history by launching the first-ever all-women's fire crew cohort in the state of California. </p>
+
+  </div>
+</section>
+
+<!-- WORKFORCE & EDUCATION (NEW DEDICATED SECTION) -->
+<section class="program-section program-section--paper">
+  <div class="program-section__inner">
+    <div class="program-section__head reveal">
+      <div>
+        <div class="eyebrow">Workforce &amp; Education</div>
+        <h2 class="h-section">From cohort to <em>career.</em></h2>
+      </div>
+      <div>
+        <p class="lede">Connecting members to leading businesses through internships, full-time roles, and union apprenticeship programs, while bridging members to academic opportunities including college tours and enrollment.</p>
+      </div>
+    </div>
+
+    <div class="program-section__stats reveal" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+      <div>
+        <div class="ps-stat__num" data-count="172">172</div>
+        <div class="ps-stat__label">Second Chance Apprenticeship Readiness Program Enrollees</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="137">137</div>
+        <div class="ps-stat__label">Second Chance Apprenticeship Readiness Program Graduates</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="36">36</div>
+        <div class="ps-stat__label">Placed in Unions</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="184">184</div>
+        <div class="ps-stat__label">Career Readiness Attendees</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="106">106</div>
+        <div class="ps-stat__label">Placed in Jobs</div>
+      </div>
+      <div>
+        <div class="ps-stat__num" data-count="10">10</div>
+        <div class="ps-stat__label">Enrolled in Higher Education</div>
+      </div>
+    </div>
+
+    <!-- Image placeholder: Workforce & Education -->
+    <div class="reveal" style="margin-top: 56px;">
+      <img src="assets/workforce_and_education.jpg" style="
+        width: 100%;
+        <!--aspect-ratio: 16/9;-->
+        background: linear-gradient(135deg, #1B2530 0%, #2a3340 100%);
+        border: 2px dashed rgba(235,167,23,0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+      ">
+    </div>
+  </div>
+</section>
+
+<!-- SECOND CHANCES SPOTLIGHT -->
+<section class="hart-eval">
+  <div class="hart-eval__inner">
+    <div class="hart-eval__head reveal">
+      <div class="eyebrow">Spotlight · SCARP</div>
+      <h2 class="h-section" style="color: var(--cream);">Second Chance Apprenticeship Readiness Program.</h2>
+    </div>
+
+    <div class="hart-eval__body reveal reveal--delay-1">
+      <p>The Second Chance Apprenticeship Readiness Program is ARC's key vocational training initiative. This 11-week cross-sector partnership between the Los Angeles Unified School District and the LA/OC Building Trades offers every participant a livable wage during training before being placed directly into union apprenticeships.</p>
+
+      <p>The program delivers more than 240 hours of comprehensive training, including blueprint reading and hands-on instruction, ensuring participants are qualified and competitive candidates for their trade. By graduation, every participant holds MC3, OSHA 10, and CPR/First Aid certifications. Career pathways include apprenticeships in construction, carpentry, electrical work, welding, plumbing, and masonry.</p>
+
+  </div>
+</div>
+    <!-- Randi Dees member spotlight -->
+    <div class="audio-card reveal">
+      <div class="audio-card__avatar" style="overflow:hidden;"><img src="assets/randi_dees_spotlight.jpg" alt="Randi Dees" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" /></div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Randi Dees</div>
+        <div class="audio-card__role">Member Spotlight · ARC Member · Second Chance Apprenticeship Readiness Program Construction Cohort</div>
+        <p class="audio-card__quote">"Coming home, I knew I wanted to build a different life, but I had to learn everything from scratch. I waited years for the opportunity to go through ARC's construction cohort, and it changed everything. ARC became a one-stop shop for support, guiding me through every question, every setback, and even being there when I needed a place to cry. <em>Today, I'm working in construction, have my first job, my own apartment, and a strong sense of stability and pride.</em> The day I signed my lease and sat in my space, I cried happy tears. Because for the first time, everything was mine."</p>
+    
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- EV TRAINING SPOTLIGHT -->
+<section class="ev-spotlight">
+  <div class="ev-spotlight__inner">
+    <div class="reveal">
+      <div class="eyebrow">Spotlight · A New EV Training Program</div>
+      <h2 class="h-display" style="color: var(--cream);">Specialized skills for an <em>electric future.</em></h2>
+      <p class="lede" style="color: var(--cream); opacity: 0.92; margin-bottom: 48px;">The InCharge Electric Vehicle Maintenance Technician program launched in 2025 as a collaborative initiative between ARC and electric vehicle companies InCharge and LogiTech. Over a twelve-week period, participants attended classes, engaged in practical training, and received stipends to support their re-entry journey.</p>
+
+      <div class="firefighter__stats" style="margin-bottom: 56px;">
+        <div><div class="ff-stat__num" data-count="10">10</div><div class="ff-stat__label">Inaugural Cohort Enrollees</div></div>
+        <div><div class="ff-stat__num" data-count="9">9</div><div class="ff-stat__label">Successfully Graduated</div></div>
+        <div><div class="ff-stat__num">90%</div><div class="ff-stat__label">Graduation Rate</div></div>
+        <div><div class="ff-stat__num">12</div><div class="ff-stat__label">Week Program Length</div></div>
+      </div>
+
+      <div class="body-prose" style="max-width: 900px;">
+        <p>The program addresses both industry needs and social barriers, working closely with employers to ensure participants are seen as safe, certified, and well-prepared for the workforce. While some companies initially hesitated to hire individuals with felony records, most responded positively, especially after receiving reassurances and support letters from industry partners.</p>
+      </div>
+
+<div class="audio-card reveal" style="margin-top: 64px; max-width: 900px;">
+      <div class="audio-card__avatar" style="overflow:hidden;"><img src="assets/Christopher_Games_spotlight.jpg" alt="Christopher Games" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" /></div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Christopher Games</div>
+        <div class="audio-card__role">InCharge Program Graduate</div>
+        <p class="audio-card__quote">"I think being able to learn a skill, a specialized skill, in a field that's growing exponentially, and that's going to continue to grow, it opens up <em>such a wide world for us to be able to do that</em> — and not only that, make a sustainable living. What was a challenge for me getting out was being able to get a job that I can make a decent pay, where I can provide for myself and for my family."</p>
+        
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLICY AND AWARENESS STICKY-SCROLL -->
+<section class="programs-section" id="policy">
+  <div class="section__inner">
+    <div class="numbers__header reveal">
+      <div class="ornament"><div class="ornament__line"></div><div class="ornament__dot"></div><div class="ornament__line"></div></div>
+      <div class="eyebrow" style="text-align:center;">Policy and Awareness</div>
+      <h2 class="h-display" style="text-align:center; max-width: 900px; margin: 0 auto;">Change happens when people <em>show up</em> and <em>speak out. </em></h2>
+      <p class="lede" style="text-align:center; margin: 24px auto 0;">In 2025, ARC showed up in Sacramento, on social media, and everywhere in between fighting for policies that change lives. With hundreds of members training, organizing and advocating for legislation our coalition was a powerful and resilient force. At the same time, ARC's digital presence spoke out and told stories that changed minds. More people than ever were encountering the real stories of formerly incarcerated people, and seeing them differently.</p><p></p>
+      <p class="lede" style="text-align:center; margin: 24px auto 0;">From viral reels about incarcerated firefighters to policy explainers that moved constituents to contact their legislators, ARC's communication work created change. </p>
+  </div>
+</section>
+<!-- POLICY -->
+<section class="policy">
+  <div class="policy__inner">
+    <div class="policy__head">
+      <div class="reveal">
+        <div class="eyebrow">Policy Advocacy</div>
+        <h2 class="h-section" style="color: var(--cream);">2025 Wins.</h2>
+      </div>
+      <div class="reveal reveal--delay-1">
+        <p class="body-prose"><p style="color: var(--text-light);">With more than <strong style="color: var(--gold);">650 ARC members trained</strong> in policy and <strong style="color: var(--gold);">330 engaged in active advocacy</strong>, our coalition was a powerful force for systemic change — even in a shifting political landscape. Hundreds of members showed up, spoke out, and helped shape the policies that govern their lives and the lives of people still inside.</p></p>
+      </div>
+    </div>
+
+    <div class="policy__bills reveal">
+      <div class="bill">
+        <div class="bill__id">AB 247 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Bryan</span></div>
+        <div class="bill__desc">Raises pay for incarcerated and youth hand crew workers while they are on assignment.</div>
+        <div class="bill__status bill__status--passed">Passed</div>
+      </div>
+      <div class="bill">
+        <div class="bill__id">SB 245 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Reyes</span></div>
+        <div class="bill__desc">Automates the expungement process for the fire hand crew.</div>
+        <div class="bill__status bill__status--passed">Passed</div>
+      </div>
+      <div class="bill">
+        <div class="bill__id">AB 952 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Elhawary</span></div>
+        <div class="bill__desc">Makes the Youth Offender fire camp program permanent and allows the state to expand youth fire camp opportunities.</div>
+        <div class="bill__status bill__status--passed">Passed</div>
+      </div>
+      <div class="bill">
+        <div class="bill__id">ACA 6 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Wilson</span></div>
+        <div class="bill__desc">Constitutional amendment to end slavery and forced prison labor in California. If it clears the Legislature, it goes to voters in November 2026.</div>
+        <div class="bill__status bill__status--two-year">Two-Year Bill</div>
+      </div>
+
+      <div class="bill">
+        <div class="bill__id">SB 562 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Ashby</span></div>
+        <div class="bill__desc">Would require most of the bail premium to be refunded when charges are dropped or never filed and the person has appeared in court.</div>
+        <div class="bill__status bill__status--two-year">Two-Year Bill</div>
+      </div>
+      <div class="bill">
+        <div class="bill__id">SB 357 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Menjivar</span></div>
+        <div class="bill__desc">Updates how juvenile cases are handled and clarifies the roles of the courts and probation.</div>
+        <div class="bill__status bill__status--two-year">Two-Year Bill</div>
+      </div>
+      <div class="bill">
+        <div class="bill__id">AB 923 <span style="color: var(--text-light); font-size: 12px; font-family: var(--sans); font-weight: 400; letter-spacing: 0.1em;">Quirk-Silva</span></div>
+        <div class="bill__desc">The California Women's Care Act focused on reducing the incarceration of pregnant and postpartum people.</div>
+        <div class="bill__status bill__status--did-not-pass">Did Not Pass</div>
+      </div>
+    </div>
+
+    <div class="audio-card reveal" style="margin-top: 56px;">
+      <div class="audio-card__avatar" style="overflow:hidden;"><img src="assets/tyrique_shipp_quote.jpeg" alt="Tyrique Shipp" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" /></div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Tyrique Shipp</div>
+        <div class="audio-card__role">Policy Coordinator · 2.5 Years at ARC</div>
+        <p class="audio-card__quote">"Seeing the Governor sign our three fire hand crew bills felt like <em>a real culmination of ARC's work</em> — uplifting formerly incarcerated young people and making sure their contributions were recognized. It was a reminder that when directly impacted people are supported and invested in, real change is possible."</p>
+       
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AWARENESS / SOCIAL GROWTH -->
+<section class="awareness">
+  <div class="awareness__inner">
+    <div class="awareness__head">
+      <div class="reveal">
+        <div class="eyebrow">Awareness</div>
+        <h2 class="h-section">Scrolling, turned into <em>storytelling.</em></h2>
+      </div>
+      <div class="reveal reveal--delay-1">
+        <p class="body-prose"><p>By meeting people where they are on social media, ARC turned scrolling into storytelling. Humor, trending audio, and compelling testimonials brought the realities of reentry to audiences who might never have sought them out. As posts went viral and our followers grew, a wider public began to see formerly incarcerated people differently. Every reel, caption, and comment section became a place to challenge stigma, celebrate resilience, and make the case for second chances. This increased visibility also resulted in tangible policy change for prison system reform, helping build momentum for the passing of <strong style="color: var(--ink);">AB 247</strong>, raising wages for incarcerated firefighters.</p></p>
+      </div>
+    </div>
+
+    <div class="growth-grid">
+      <div class="growth-card reveal" style="--target-width: 68%;">
+        <div class="growth-card__label">Instagram Following</div>
+        <div class="growth-card__metric">+68%</div>
+        <div class="growth-card__from-to"><span>78K</span><span class="growth-card__arrow">→</span><span>126K</span></div>
+        <div class="growth-card__sub">followers, 2024 to 2025</div>
+        <div class="growth-card__bar"><div class="growth-card__bar-fill"></div></div>
+      </div>
+      <div class="growth-card reveal reveal--delay-1" style="--target-width: 100%;">
+        <div class="growth-card__label">Total Social Reach</div>
+        <div class="growth-card__metric">+190%</div>
+        <div class="growth-card__from-to"><span>7.2M</span><span class="growth-card__arrow">→</span><span>20.9M</span></div>
+        <div class="growth-card__sub">impressions and views, 2024 to 2025</div>
+        <div class="growth-card__bar"><div class="growth-card__bar-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRESS LOGOS -->
+<section class="press">
+  <div class="press__inner">
+    <div class="reveal">
+      <div class="eyebrow">ARC in the News</div>
+      <h2 class="h-display">Even more people <em>listened.</em></h2>
+      <p class="lede">From national outlets to local coverage, the stories of our members and the impact of our programs continued to change hearts, minds, and the broader narrative around second chances.</p>
+    </div>
+    <div class="press__grid reveal">
+      <div class="press-cell"><span class="ml-serif-bold">The Washington Post</span></div>
+      <div class="press-cell"><span class="ml-serif-italic">The Guardian</span></div>
+      <div class="press-cell"><span class="ml-modern">LA TIMES</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">CBS NEWS</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">NBC NEWS</span></div>
+      <div class="press-cell"><span class="ml-modern">ASSOCIATED PRESS</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">PBS</span></div>
+      <div class="press-cell"><span class="ml-condensed">BET</span></div>
+      <div class="press-cell"><span class="ml-display-serif">People</span></div>
+      <div class="press-cell"><span class="ml-fraunces-italic">CalMatters</span></div>
+      <div class="press-cell"><span class="ml-modern">LAIST</span></div>
+      <div class="press-cell"><span class="ml-serif-bold">The Ringer</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">YAHOO NEWS</span></div>
+      <div class="press-cell"><span class="ml-modern">SF GATE</span></div>
+      <div class="press-cell"><span class="ml-display-serif">Sacramento Bee</span></div>
+      <div class="press-cell"><span class="ml-condensed">FOX 11</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">KQED</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">KTVU</span></div>
+      <div class="press-cell"><span class="ml-modern">SPECTRUM NEWS</span></div>
+      <div class="press-cell"><span class="ml-condensed">COMPLEX</span></div>
+      <div class="press-cell"><span class="ml-modern">MEN'S HEALTH</span></div>
+      <div class="press-cell"><span class="ml-fraunces-italic">Civil Eats</span></div>
+      <div class="press-cell"><span class="ml-modern">POPULAR MECHANICS</span></div>
+      <div class="press-cell"><span class="ml-script-feel">Prism</span></div>
+      <div class="press-cell"><span class="ml-condensed">MITÚ</span></div>
+      <div class="press-cell"><span class="ml-condensed">LOS 40</span></div>
+      <div class="press-cell"><span class="ml-serif-bold">Daily Bruin</span></div>
+      <div class="press-cell"><span class="ml-display-serif">High Country News</span></div>
+      <div class="press-cell"><span class="ml-fraunces-italic">Living on Earth</span></div>
+      <div class="press-cell"><span class="ml-modern">NEWS NATION</span></div>
+      <div class="press-cell"><span class="ml-sans-bold">REAL NEWS NETWORK</span></div>
+      <div class="press-cell"><span class="ml-fraunces-italic">The Eastsider</span></div>
+      <div class="press-cell"><span class="ml-modern">CAL POLY POST</span></div>
+      <div class="press-cell" style="opacity:0.5;"><span class="ml-fraunces-italic">+ more</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FIREFIGHTER CINEMATIC -->
+<section class="firefighter" id="fire">
+  <div class="firefighter__inner">
+    <div class="firefighter__eyebrow reveal">ARC Firefighter Scholarship Fund</div>
+    <h2 class="firefighter__title reveal reveal--delay-1">Fighting fires.<br>Finding <em>career pathways.</em></h2>
+    <p class="firefighter__lede reveal reveal--delay-2">As the destructive Palisades Fire ripped through Los Angeles County in early January 2025, nearly 1,000 incarcerated firefighters battled the blaze. They earned less than $11 a day. They make up 30% of California's firefighters. Until recently, they had no path to becoming professional firefighters upon their reentry.</p>
+
+    <div class="firefighter__stats reveal reveal--delay-3">
+      <div><div class="ff-stat__num">$2M</div><div class="ff-stat__label">Raised for Firefighter Fund</div></div>
+      <div><div class="ff-stat__num">29</div><div class="ff-stat__label">Scholarship Recipients</div></div>
+      <div><div class="ff-stat__num">$5,700</div><div class="ff-stat__label">Average Award Amount</div></div>
+      <div><div class="ff-stat__num">15M+</div><div class="ff-stat__label">Reached Through ARC Social</div></div>
+    </div>
+
+    <p class="firefighter__pull reveal">Amid the smoke, ash, and destruction of the LA fires, <em>people saw us as heroes</em> — recognizing the good we could achieve when given a second chance.<span style="display:block; font-style:normal; font-size: 0.6em; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 16px;">— Jose Angel Amezcua, in CalMatters</span></p>
+
+    <!-- Image placeholder: ARC Firefighter Scholarship Fund -->
+    <div class="reveal" style="margin-bottom: 56px;">
+      <img src="assets/fire_fighter_fund.jpg" style="
+        width: 100%;
+        <!--aspect-ratio: 16/10;-->
+        background: linear-gradient(135deg, rgba(42,24,16,0.9) 0%, rgba(10,17,25,0.97) 100%);
+        border: 2px dashed rgba(235,167,23,0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+      ">
+    </div>
+
+    <div class="body-prose reveal" style="max-width: 760px;">
+      <p>In 2018, ARC helped launch a program to fix the no-path-forward problem. Today, our firefighting program has enrolled nearly 450 formerly incarcerated people, providing certifications, record expungement, EMT licenses, and jobs in both Cal Wildlands firefighters and municipal fire departments. ARC's social media presence contributed to critical narrative-changing conversations about incarcerated firefighters, reaching <strong style="color: var(--gold); font-weight: 600;">15M+ social media accounts</strong>, with reels pulling in as many as <strong style="color: var(--gold); font-weight: 600;">18M views</strong>.</p>
+      <p>By the end of 2025, ARC welcomed Prince Harry, Duke of Sussex, who visited the Ventura Training Center to see firsthand how the program trains formerly incarcerated people to continue their careers as firefighters.</p>
+
+<p>We are proud to see our VTC alumni go on to become leaders at local fire stations across the state, defending our communities from the unimaginable. Kurt Pinelli, a 2019 VTC graduate, was recently promoted to Captain at the Santa Clara Unit this year. Earl Thomas, from our second VTC graduating class, also a 2019 alumnus, started out as a seasonal firefighter upon reentry in San Benito Monterey, at the Bradley Fire Center for two years. Then, he was promoted to Fire Apparatus Engineer in 2022 at the Bear Valley Station, until his promotion to Captain of the San Benito Monterey Uni in 2025. Jason Moyer graduated in 2021, and spent a year working as a seasonal firefighter at Covelo Fire Station in Mendocino, before becoming a Fire Apparatus Engineer in 2022 at the Laytonville Fire Station. Now, entering 2026, Jason has been promoted to Captain at the Glenwood Fire Center in San Manteo.</p>
+
+<p>Promotions like Kurt’s, Earl’s, and Jason’s demonstrate how investing in second chances, with the right support and opportunities, creates lasting impact for stronger and safer communities.</p>
+
+    </div>
+
+    <div class="audio-card reveal" style="margin-top: 64px; max-width: 900px;">
+      <div class="audio-card__avatar" style="overflow:hidden;"><img src="assets/Norma_Cumpian_quote.jpg" alt="Norma Cumpian" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;" /></div>
+      <div class="audio-card__body">
+        <div class="audio-card__attribution">Norma Cumpian</div>
+        <div class="audio-card__role">Chief of Staff · 10 Years at ARC</div>
+        <p class="audio-card__quote">"What I value most is <em>turning my lived experience into something meaningful for others.</em> I think about Dakota — working our front desk during the week, traveling from LA to Santa Rosa on weekends to attend Firefighter Academy, building a better future for himself and using his past as motivation. It is incredibly rewarding to witness this level of determination in a young person and to know that ARC has played a role in creating opportunities that support individuals in reaching the full potential they were born with."</p>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOOKING AHEAD 2027 -->
+<section class="ahead" id="ahead">
+  <div class="ahead__inner">
+    <div class="reveal">
+      <div class="eyebrow">Up Next</div>
+      <h2 class="h-display" style="color: var(--cream);">Looking ahead to 2027</h2>
+      <p class="lede" style="max-width: 880px;">Now in our second decade, the Anti-Recidivism Coalition's work has transformed many of our communities across California and had a ripple effect throughout the country. Grounded in lived experience and data-driven from the start, our work continues to prove the saying that <em style="color: var(--gold);">"those closest to the problem are also closest to the solution."</em> We're committed to continuing to live out that precept every day, shaping innovative programming alongside members to give people a meaningful second chance and advocate for systems change that will upend the cycles of trauma, violence, and neglect. We won't stop until we've achieved a more equitable criminal justice system for all.</p>
+    </div>
+
+    <div class="reveal" style="margin-top: 56px;">
+      <h3 class="h-block" style="color: var(--gold); margin-bottom: 24px; font-style: italic; font-weight: 400;">The evidence speaks for itself.</h3>
+      <p style="max-width: 760px; font-size: 17px; line-height: 1.7; color: var(--cream); opacity: 0.92;">Since our programs began, we have seen:</p>
+    </div>
+
+    <div class="ahead__legacy">
+      <div class="reveal"><div class="legacy-stat__num">32,153</div><div class="legacy-stat__label">HART-Inside participants since launch</div></div>
+      <div class="reveal reveal--delay-1"><div class="legacy-stat__num">23,982</div><div class="legacy-stat__label">Successfully completed the program</div></div>
+      <div class="reveal reveal--delay-2"><div class="legacy-stat__num">189</div><div class="legacy-stat__label">Cadets graduated from our Ventura Training Center</div></div>
+      <div class="reveal reveal--delay-3"><div class="legacy-stat__num">1,500+</div><div class="legacy-stat__label">Clients in our expungement program</div></div>
+      <div class="reveal"><div class="legacy-stat__num">80%</div><div class="legacy-stat__label">Of ARC staff are system-impacted individuals</div></div>
+      <div class="reveal reveal--delay-1"><div class="legacy-stat__num">497</div><div class="legacy-stat__label">Unique members in 116 advocacy events at local, state, and federal levels</div></div>
+      <div class="reveal reveal--delay-2"><div class="legacy-stat__num">39</div><div class="legacy-stat__label">State legislative bills sponsored or co-sponsored since 2012</div></div>
+      <div class="reveal reveal--delay-3"><div class="legacy-stat__num">24M+</div><div class="legacy-stat__label">People reached through our digital content</div></div>
+    </div>
+
+    <div class="reveal" style="max-width: 880px; margin-bottom: 64px;">
+      <p style="font-size: 17px; line-height: 1.75; color: var(--cream); opacity: 0.92; margin-bottom: 1.2em;">Our success has led to real, systemic change. Since 2012, ARC has sponsored or co-sponsored <strong style="color: var(--gold); font-weight: 600;">39 state legislative bills</strong> and <strong style="color: var(--gold); font-weight: 600;">influenced approximately 39 legislative initiatives</strong> through direct advocacy, support letters, public comments, and testimony.</p>
+      <p style="font-size: 17px; line-height: 1.75; color: var(--cream); opacity: 0.92;">And the general public is walking right alongside us. Our digital content is reaching <strong style="color: var(--gold); font-weight: 600;">more than 24 million people</strong>, providing us with unique opportunities to share the stories of people impacted by the criminal legal system, both inside and out, and spread hope that there are second chances for us all.</p>
+    </div>
+
+    <div class="reveal" style="margin-top: 80px; padding-top: 48px; border-top: 1px solid rgba(235,167,23,0.25);">
+      <div class="eyebrow" style="color: var(--gold);">Igniting Change · Expanding Opportunity</div>
+      <h3 class="h-section" style="color: var(--cream); margin-bottom: 24px; max-width: 880px;">Building a foundation to <em>ground our work for decades.</em></h3>
+
+      <!-- Image placeholder: Igniting Change · Expanding Opportunity -->
+      <img src="assets/up_next.jpg" style="
+        width: 100%;
+        background: linear-gradient(135deg, #1B2530 0%, #2a3340 100%);
+        border: 2px dashed rgba(235,167,23,0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 40px;
+      ">
+
+      <p class="body-prose" style="max-width: 880px;"><p style="color: var(--cream); opacity: 0.92;">In 2025, ARC embraced change from within and outside, and began operationalizing our <strong style="color: var(--gold); font-weight: 600;">2025–2027 strategic plan</strong> to build a new foundation that will ground our work for decades to come. Under the joint leadership of Interim Executive Director Rob Woronoff and Board Chair Jerome Dixon, key projects are now underway to strengthen our roots in California by expanding our physical foothold, from training and development opportunities where our insights will be utilized by others to reshape communities beyond California, to expanding our policy advocacy and awareness work to transform narratives and systems around criminal justice.</p>
+      <p style="color: var(--cream); opacity: 0.92; margin-top: 1.2em;">As we look ahead to 2027, ARC is solidifying our foundational work and preparing to expand our impact through three pillars:</p></p>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="pillar__num">01 ·</div>
+        <div class="pillar__title">Meaningful Work, Inside and Out</div>
+        <div class="pillar__desc">Expanding and enhancing direct services through partnerships and staff expertise. Recruiting specialized professionals, developing new programs (especially in youth prevention and mental health), and forming telehealth and community partnerships to increase impact and opportunities for underserved members.</div>
+      </div>
+      <div class="pillar reveal reveal--delay-1">
+        <div class="pillar__num">02 ·</div>
+        <div class="pillar__title">Change the Narrative, Change the System</div>
+        <div class="pillar__desc">Advancing public policy, advocacy, and awareness at state and national levels. Building legislative roadmaps, participating in coalitions, and elevating organizational leaders as thought leaders to change the narrative for justice-impacted individuals, shape policy, and broaden influence.</div>
+      </div>
+      <div class="pillar reveal reveal--delay-2">
+        <div class="pillar__num">03 ·</div>
+        <div class="pillar__title">A Sustainable Foundation for the Future</div>
+        <div class="pillar__desc">Upgrading technology, streamlining financial tools, and fostering a positive, accountable workplace through staff development and engagement — laying a sustainable foundation for growth.</div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top: 96px; padding-top: 48px; border-top: 1px solid rgba(235,167,23,0.25);">
+      <p style="font-family: var(--display); font-style: italic; font-weight: 400; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.4; color: var(--cream); max-width: 920px; letter-spacing: -0.01em;">Join us to <em style="color: var(--gold);">create more second chances, realize more dreams, transform lives,</em> and strengthen our movement built on love, redemption, and resilience.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINANCIALS -->
+<section class="financials">
+  <div class="financials__inner">
+    <div class="reveal" style="text-align:center;">
+      <div class="eyebrow">Financials</div>
+      <h2 class="h-display">Where the funding <em>came from</em> and <em>went.</em></h2>
+      <p class="lede" style="text-align: center; margin: 24px auto 0;">FY25 revenue and expense breakdown.</p>
+    </div>
+
+    <div class="financials__grid">
+      <!-- REVENUE DONUT -->
+      <div class="donut-wrap reveal">
+        <h3>Revenue</h3>
+        <svg class="donut-svg" viewBox="0 0 200 200" aria-label="FY25 Revenue breakdown">
+          <!-- Governmental 55% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EBA717" stroke-width="32" stroke-dasharray="242 440" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <!-- Foundations 22% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#0A1119" stroke-width="32" stroke-dasharray="97 440" stroke-dashoffset="-242" transform="rotate(-90 100 100)"/>
+          <!-- Individuals 12% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#4B535D" stroke-width="32" stroke-dasharray="53 440" stroke-dashoffset="-339" transform="rotate(-90 100 100)"/>
+          <!-- Investment 8% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#B8800F" stroke-width="32" stroke-dasharray="35 440" stroke-dashoffset="-392" transform="rotate(-90 100 100)"/>
+          <!-- Other 2% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#C7C9CA" stroke-width="32" stroke-dasharray="9 440" stroke-dashoffset="-427" transform="rotate(-90 100 100)"/>
+          <!-- Corporate Sponsors 1% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EDBD4F" stroke-width="32" stroke-dasharray="4 440" stroke-dashoffset="-436" transform="rotate(-90 100 100)"/>
+          <!-- center label -->
+          <text x="100" y="96" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="22" fill="#0A1119">FY25</text>
+          <text x="100" y="115" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="9" letter-spacing="2" fill="#4B535D">REVENUE</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-swatch" style="background: #EBA717;"></div><div class="legend-item__label">Governmental</div><div class="legend-item__pct">55%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #0A1119;"></div><div class="legend-item__label">Foundations</div><div class="legend-item__pct">22%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #4B535D;"></div><div class="legend-item__label">Individuals</div><div class="legend-item__pct">12%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #B8800F;"></div><div class="legend-item__label">Investment</div><div class="legend-item__pct">8%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #C7C9CA;"></div><div class="legend-item__label">Other (Rebates, Merch)</div><div class="legend-item__pct">2%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #EDBD4F;"></div><div class="legend-item__label">Corporate Sponsors</div><div class="legend-item__pct">1%</div></div>
+        </div>
+      </div>
+
+      <!-- EXPENSES DONUT -->
+      <div class="donut-wrap reveal reveal--delay-1">
+        <h3>Expenses</h3>
+        <svg class="donut-svg" viewBox="0 0 200 200" aria-label="FY25 Expenses breakdown">
+          <!-- Inreach 27% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EBA717" stroke-width="32" stroke-dasharray="119 440" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <!-- Workforce & Education 21% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#0A1119" stroke-width="32" stroke-dasharray="92 440" stroke-dashoffset="-119" transform="rotate(-90 100 100)"/>
+          <!-- Member Services 19% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#B8800F" stroke-width="32" stroke-dasharray="84 440" stroke-dashoffset="-211" transform="rotate(-90 100 100)"/>
+          <!-- General & Admin 16% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#2a3340" stroke-width="32" stroke-dasharray="70 440" stroke-dashoffset="-295" transform="rotate(-90 100 100)"/>
+          <!-- Fundraising 8% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EDBD4F" stroke-width="32" stroke-dasharray="35 440" stroke-dashoffset="-365" transform="rotate(-90 100 100)"/>
+          <!-- Advocacy 5% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#4B535D" stroke-width="32" stroke-dasharray="22 440" stroke-dashoffset="-400" transform="rotate(-90 100 100)"/>
+          <!-- Housing 2% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#8B939D" stroke-width="32" stroke-dasharray="9 440" stroke-dashoffset="-422" transform="rotate(-90 100 100)"/>
+          <!-- Research 2% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#C7C9CA" stroke-width="32" stroke-dasharray="9 440" stroke-dashoffset="-431" transform="rotate(-90 100 100)"/>
+          <text x="100" y="96" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="22" fill="#0A1119">FY25</text>
+          <text x="100" y="115" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="9" letter-spacing="2" fill="#4B535D">EXPENSES</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-swatch" style="background: #EBA717;"></div><div class="legend-item__label">Inreach</div><div class="legend-item__pct">27%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #0A1119;"></div><div class="legend-item__label">Workforce &amp; Education</div><div class="legend-item__pct">21%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #B8800F;"></div><div class="legend-item__label">Member Services</div><div class="legend-item__pct">19%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #2a3340;"></div><div class="legend-item__label">G&amp;A · Building Operations</div><div class="legend-item__pct">16%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #EDBD4F;"></div><div class="legend-item__label">Fundraising</div><div class="legend-item__pct">8%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #4B535D;"></div><div class="legend-item__label">Advocacy</div><div class="legend-item__pct">5%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #8B939D;"></div><div class="legend-item__label">Housing &amp; Residential</div><div class="legend-item__pct">2%</div></div>
+          <div class="legend-item"><div class="legend-swatch" style="background: #C7C9CA;"></div><div class="legend-item__label">Research</div><div class="legend-item__pct">2%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Programs total callout -->
+    <div class="financials-callout reveal">
+      <div class="financials-callout__metric">76<span style="font-size: 0.5em;">%</span></div>
+      <div class="financials-callout__label">Of FY25 expenses went directly to programs serving members</div>
+      <div class="financials-callout__sub">Inreach + Workforce &amp; Education + Member Services + Advocacy + Housing + Research</div>
+    </div>
+  </div>
+</section>
+
+<!-- TAKE ACTION -->
+<section class="take-action" id="connect">
+  <div class="take-action__inner">
+    <div class="reveal">
+      <div class="eyebrow">Take Action</div>
+      <h2 class="h-display" style="color: var(--cream);">Second chances don't happen <em>alone.</em></h2>
+      <p class="take-action__lede">They happen because people like you show up. Your support makes it possible for ARC to walk alongside every member, fight for every policy win, and change the story the public hears about formerly incarcerated people. Together, we're building a criminal legal system that is <em style="color: var(--gold); font-family: var(--display); font-style: italic;">more just, more compassionate, and better for all of us.</em></p>
+    </div>
+    <div class="take-action__cta-row reveal reveal--delay-1">
+      <a href="https://antirecidivism.org/donate/" class="btn btn--gold">Donate Now</a>
+      <a href="mailto:development@antirecidivism.org" class="btn btn--ghost">Funder Inquiries</a>
+    </div>
+
+    <div class="footer-grid reveal">
+      <div class="footer-col">
+        <h5>Anti-Recidivism Coalition</h5>
+        <p style="font-family: var(--display); font-size: 18px; line-height: 1.5; color: var(--cream); font-style: italic;">Empowering formerly and currently incarcerated people to thrive — and making our communities safe, healthy, and whole.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Connect</h5>
+        <a href="https://antirecidivism.org/">antirecidivism.org</a>
+        <a href="https://www.instagram.com/antirecidivismcoalition/">Instagram</a>
+        <a href="https://www.facebook.com/antirecidivismcoalition">Facebook</a>
+        <a href="https://x.com/AntiRecidivism">X / Twitter</a>
+        <a href="https://www.linkedin.com/company/anti-recidivism-coalition-arc-/">LinkedIn</a>
+      </div>
+      <div class="footer-col">
+        <h5>Inquiries</h5>
+        <a href="mailto:development@antirecidivism.org">development@<br>antirecidivism.org</a>
+      </div>
+      <div class="footer-col">
+        <h5>Headquarters</h5>
+        <p>Hope &amp; Redemption Center<br>Echo Park, Los Angeles<br>Sacramento Office</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-bottom__brand">ARC · 2025 Impact Report</span>
+      <span>© 2026 Anti-Recidivism Coalition. All rights reserved.</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Progress bar
+  const bar = document.getElementById('progressBar');
+  const topbar = document.getElementById('topbar');
+  function updateProgress() {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop || document.body.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = scrolled + '%';
+    if (window.scrollY > 100) topbar.classList.add('scrolled');
+    else topbar.classList.remove('scrolled');
+  }
+  window.addEventListener('scroll', updateProgress);
+  updateProgress();
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Growth card bar reveals
+  const growthCards = document.querySelectorAll('.growth-card');
+  const growthObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        growthObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  growthCards.forEach(el => growthObs.observe(el));
+
+  // Count-up for numbers
+  function countUp(el) {
+    const target = parseInt(el.getAttribute('data-count'), 10);
+    if (isNaN(target)) return;
+    const duration = 1600;
+    const start = performance.now();
+    const formatter = new Intl.NumberFormat('en-US');
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(eased * target);
+      el.textContent = formatter.format(value);
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = formatter.format(target);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const numEls = document.querySelectorAll('[data-count]');
+  const numObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        countUp(e.target);
+        numObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  numEls.forEach(el => numObs.observe(el));
+
+  // Audio card: generate waveform bars + toggle play state
+  document.querySelectorAll('.audio-card').forEach(card => {
+    const wave = card.querySelector('.audio-card__waveform');
+    if (wave) {
+      // Generate ~40 bars with varying heights so the waveform feels organic
+      const bars = 40;
+      for (let i = 0; i < bars; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        // Pseudo-random height: 25%–100%, with envelope shape
+        const env = Math.sin((i / bars) * Math.PI) * 0.6 + 0.4; // taper at edges
+        const noise = 0.4 + Math.random() * 0.6;
+        const h = Math.max(20, Math.min(100, env * noise * 100));
+        bar.style.height = h + '%';
+        bar.style.animationDelay = (i * 0.06) + 's';
+        wave.appendChild(bar);
+      }
+    }
+    const playBtn = card.querySelector('.audio-card__play');
+    if (playBtn) {
+      playBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        card.classList.toggle('playing');
+        // Toggle play/pause SVG
+        const svg = playBtn.querySelector('svg');
+        if (card.classList.contains('playing')) {
+          svg.innerHTML = '<rect x="2" y="0" width="3" height="16" fill="#0A1119"/><rect x="9" y="0" width="3" height="16" fill="#0A1119"/>';
+        } else {
+          svg.innerHTML = '<path d="M0 0L14 8L0 16V0Z" fill="#0A1119"/>';
+        }
+      });
+    }
+  });
+</script>
+
+<!-- Leaflet for the Where We Work map -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function() {
+  if (typeof L === 'undefined' || !document.getElementById('ca-map')) return;
+
+  // Initialize map roughly centered on California
+  const map = L.map('ca-map', {
+    center: [37.0, -119.5],
+    zoom: 6,
+    minZoom: 5,
+    maxZoom: 11,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: true
+  });
+
+  // CARTO Dark Matter tiles with API key
+  L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png?key=cb1_4j9c_1_d26a091c8031c7754efe8b37', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 20
+  }).addTo(map);
+
+  // Reusable pin makers
+  function makeIcon(cls, size) {
+    return L.divIcon({
+      className: '',
+      html: '<div class="' + cls + '"></div>',
+      iconSize: [size, size],
+      iconAnchor: [size/2, size/2],
+      popupAnchor: [0, -size/2]
+    });
+  }
+  const iconHQ      = makeIcon('arc-pin--hq', 18);
+  const iconCDCR    = makeIcon('arc-pin', 12);
+  const iconTrain   = makeIcon('arc-pin arc-pin--ring', 12);
+
+  // HQ + Office markers (pulsing)
+  const hqMarkers = [
+    { name: 'Los Angeles · HQ',  sub: 'Hope &amp; Redemption Center · Echo Park', lat: 34.0780, lon: -118.2606 },
+    { name: 'Sacramento Office', sub: 'Regional Office',                            lat: 38.5816, lon: -121.4944 },
+    { name: 'San Diego',         sub: 'Direct Service',                             lat: 32.7157, lon: -117.1611 }
+  ];
+  hqMarkers.forEach(m => {
+    L.marker([m.lat, m.lon], { icon: iconHQ }).addTo(map)
+      .bindPopup('<strong>' + m.name + '</strong><em>' + m.sub + '</em>');
+  });
+
+  // CDCR facility markers — accurate coordinates
+  const cdcr = [
+    { name: 'Pelican Bay State Prison',                    lat: 41.8267, lon: -124.1500 },
+    { name: 'CA Medical Facility (Vacaville)',             lat: 38.3500, lon: -121.9667 },
+    { name: 'CA State Prison, Solano',                     lat: 38.3500, lon: -121.9500 },
+    { name: 'San Quentin Rehabilitation Center',           lat: 37.9522, lon: -122.4892 },
+    { name: 'Valley State Prison (Chowchilla)',            lat: 37.0833, lon: -120.2333 },
+    { name: 'Avenal State Prison',                         lat: 36.0042, lon: -120.1289 },
+    { name: 'CA Substance Abuse Treatment Facility · Corcoran', lat: 36.1003, lon: -119.5733 },
+    { name: 'CA State Prison, Corcoran',                   lat: 36.0850, lon: -119.5650 },
+    { name: 'Pleasant Valley State Prison (Coalinga)',     lat: 36.1283, lon: -120.4153 },
+    { name: 'Kern Valley State Prison (Delano)',           lat: 35.7647, lon: -119.2367 },
+    { name: 'CA Correctional Institution (Tehachapi)',     lat: 35.1383, lon: -118.4625 },
+    { name: 'CA Men\'s Colony (San Luis Obispo)',          lat: 35.3253, lon: -120.6597 },
+    { name: 'CA Institution for Men (Chino)',              lat: 34.0144, lon: -117.6781 },
+    { name: 'CA Institution for Women (Corona)',           lat: 33.9925, lon: -117.6631 },
+    { name: 'CA Rehabilitation Center (Norco)',            lat: 33.9383, lon: -117.5742 },
+    { name: 'Calipatria State Prison',                     lat: 33.1297, lon: -115.5142 },
+    { name: 'Centinela State Prison (Imperial)',           lat: 32.8253, lon: -115.5953 },
+    { name: 'Richard J. Donovan Correctional Facility',    lat: 32.5803, lon: -116.9628 },
+    { name: 'Folsom State Prison',                         lat: 38.6936, lon: -121.1606 },
+    { name: 'Mule Creek State Prison (Ione)',              lat: 38.3517, lon: -120.9325 },
+    { name: 'Sierra Conservation Center (Jamestown)',      lat: 37.9558, lon: -120.4011 },
+    { name: 'Salinas Valley State Prison',                 lat: 36.6622, lon: -121.4308 },
+    { name: 'Correctional Training Facility (Soledad)',    lat: 36.4419, lon: -121.3308 },
+    { name: 'Wasco State Prison',                          lat: 35.5728, lon: -119.4242 },
+    { name: 'North Kern State Prison (Delano)',            lat: 35.7842, lon: -119.2625 }
+  ];
+  cdcr.forEach(f => {
+    L.marker([f.lat, f.lon], { icon: iconCDCR }).addTo(map)
+      .bindPopup('<strong>' + f.name + '</strong><em>HART Programming Site</em>');
+  });
+
+  // Training & conservation sites (ring style)
+  const training = [
+    { name: 'Ventura Training Center',     sub: 'Firefighter career pathway program', lat: 34.2233, lon: -119.0764 },
+    { name: 'Pine Grove Conservation Camp', sub: 'Family Engagement Program',           lat: 38.4319, lon: -120.6378 },
+    { name: 'Growlersburg Conservation Camp (Georgetown)', sub: 'Family Engagement Program', lat: 38.9078, lon: -120.8439 }
+  ];
+  training.forEach(t => {
+    L.marker([t.lat, t.lon], { icon: iconTrain }).addTo(map)
+      .bindPopup('<strong>' + t.name + '</strong><em>' + t.sub + '</em>');
+  });
+
+  // Re-enable scroll-zoom only on click (so users don't get trapped)
+  map.on('click', function() { map.scrollWheelZoom.enable(); });
+  map.on('mouseout', function() { map.scrollWheelZoom.disable(); });
+})();
+</script>
+
+</body>
+</html>
